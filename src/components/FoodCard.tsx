@@ -11,6 +11,7 @@ interface FoodCardProps {
   onRequestPress?: () => void;
   showRequestButton?: boolean;
   style?: ViewStyle;
+  distance?: string;
 }
 
 export function FoodCard({
@@ -19,6 +20,7 @@ export function FoodCard({
   onRequestPress,
   showRequestButton = false,
   style,
+  distance,
 }: FoodCardProps) {
   // Returns color based on food listing status
   const getStatusColor = (status: string) => {
@@ -142,78 +144,51 @@ export function FoodCard({
         {/* Food type, quantity, and expiry info row */}
         <View
           style={{
-            flexDirection: "row", // flex-row
-            justifyContent: "space-between", // justify-between
-            marginBottom: 12, // mb-3
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 8,
+            flexWrap: "wrap",
           }}
         >
           {/* Food type indicator */}
-          <View
-            style={{
-              flexDirection: "row", // flex-row
-              alignItems: "center", // items-center
-              flex: 1,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14, // text-sm
-                marginRight: 4, // mr-1
-              }}
-            >
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+            <Text style={{ fontSize: 14, marginRight: 4 }}>
               {getFoodTypeIcon(listing.foodType)}
             </Text>
-            <Text
-              style={{
-                fontSize: 12, // text-xs
-                color: "#666", // text-gray-600
-                marginLeft: 4, // ml-1
-              }}
-            >
+            <Text style={{ fontSize: 12, color: "#666", marginLeft: 4 }}>
               {listing.foodType}
             </Text>
           </View>
-
           {/* Quantity info */}
-          <View
-            style={{
-              flexDirection: "row", // flex-row
-              alignItems: "center", // items-center
-              flex: 1,
-            }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
             <Ionicons name="people-outline" size={14} color="#666" />
-            <Text
-              style={{
-                fontSize: 12, // text-xs
-                color: "#666", // text-gray-600
-                marginLeft: 4, // ml-1
-              }}
-            >
+            <Text style={{ fontSize: 12, color: "#666", marginLeft: 4 }}>
               Serves {listing.quantity}
             </Text>
           </View>
-
           {/* Expiry time info */}
-          <View
-            style={{
-              flexDirection: "row", // flex-row
-              alignItems: "center", // items-center
-              flex: 1,
-            }}
-          >
+          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
             <Ionicons name="time-outline" size={14} color="#666" />
-            <Text
-              style={{
-                fontSize: 12, // text-xs
-                color: "#FF6B35", // text-orange-500
-                marginLeft: 4, // ml-1
-              }}
-            >
+            <Text style={{ fontSize: 12, color: "#FF6B35", marginLeft: 4 }}>
               {TimeUtils.formatTimeLeft(listing.expiryTime)}
             </Text>
           </View>
         </View>
+        {/* Distance info (if provided) on its own row for better alignment */}
+        {distance && (
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 12,
+            }}
+          >
+            <Ionicons name="location-outline" size={14} color="#666" />
+            <Text style={{ fontSize: 12, color: "#666", marginLeft: 4 }}>
+              {distance}
+            </Text>
+          </View>
+        )}
 
         {/* Donor info and request button row */}
         <View

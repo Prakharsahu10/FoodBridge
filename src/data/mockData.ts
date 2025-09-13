@@ -15,9 +15,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 4,
     expiryTime: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 hours from now
     pickupLocation: {
-      latitude: 37.7849,
-      longitude: -122.4094,
-      address: "123 Mission St, San Francisco, CA 94103",
+      latitude: 12.975,
+      longitude: 77.599,
+      address: "MG Road, Bangalore, KA 560001",
     },
     images: [
       "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop",
@@ -40,9 +40,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 6,
     expiryTime: new Date(Date.now() + 5 * 60 * 60 * 1000), // 5 hours from now
     pickupLocation: {
-      latitude: 37.7749,
-      longitude: -122.4194,
-      address: "456 Market St, San Francisco, CA 94102",
+      latitude: 12.9712,
+      longitude: 77.594,
+      address: "Brigade Road, Bangalore, KA 560025",
     },
     images: [
       "https://images.unsplash.com/photo-1563379091339-03246963d4d6?w=400&h=300&fit=crop",
@@ -64,9 +64,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 2,
     expiryTime: new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
     pickupLocation: {
-      latitude: 37.7649,
-      longitude: -122.4294,
-      address: "789 Valencia St, San Francisco, CA 94110",
+      latitude: 12.968,
+      longitude: 77.59,
+      address: "Indiranagar, Bangalore, KA 560038",
     },
     images: [
       "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
@@ -89,9 +89,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 3,
     expiryTime: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours from now
     pickupLocation: {
-      latitude: 37.7549,
-      longitude: -122.4394,
-      address: "321 Castro St, San Francisco, CA 94114",
+      latitude: 12.961,
+      longitude: 77.584,
+      address: "Koramangala, Bangalore, KA 560034",
     },
     images: [
       "https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?w=400&h=300&fit=crop",
@@ -113,9 +113,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 2,
     expiryTime: new Date(Date.now() + 6 * 60 * 60 * 1000), // 6 hours from now
     pickupLocation: {
-      latitude: 37.7949,
-      longitude: -122.3994,
-      address: "555 Pine St, San Francisco, CA 94108",
+      latitude: 12.98,
+      longitude: 77.61,
+      address: "Whitefield, Bangalore, KA 560066",
     },
     images: [
       "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop",
@@ -137,9 +137,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 5,
     expiryTime: new Date(Date.now() + 4.5 * 60 * 60 * 1000), // 4.5 hours from now
     pickupLocation: {
-      latitude: 37.7849,
-      longitude: -122.4194,
-      address: "678 Mission St, San Francisco, CA 94103",
+      latitude: 12.9725,
+      longitude: 77.5955,
+      address: "Church Street, Bangalore, KA 560001",
     },
     images: [
       "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop",
@@ -162,9 +162,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 8,
     expiryTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
     pickupLocation: {
-      latitude: 37.7649,
-      longitude: -122.4094,
-      address: "234 Columbus Ave, San Francisco, CA 94133",
+      latitude: 12.965,
+      longitude: 77.589,
+      address: "Jayanagar, Bangalore, KA 560041",
     },
     images: [
       "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=300&fit=crop",
@@ -186,9 +186,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 3,
     expiryTime: new Date(Date.now() + 3.5 * 60 * 60 * 1000), // 3.5 hours from now
     pickupLocation: {
-      latitude: 37.7749,
-      longitude: -122.4294,
-      address: "567 Hayes St, San Francisco, CA 94102",
+      latitude: 12.97,
+      longitude: 77.6,
+      address: "Malleshwaram, Bangalore, KA 560003",
     },
     images: [
       "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop",
@@ -211,9 +211,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 4,
     expiryTime: new Date(Date.now() + 5.5 * 60 * 60 * 1000), // 5.5 hours from now
     pickupLocation: {
-      latitude: 37.7549,
-      longitude: -122.4194,
-      address: "890 Grant Ave, San Francisco, CA 94108",
+      latitude: 12.96,
+      longitude: 77.58,
+      address: "BTM Layout, Bangalore, KA 560076",
     },
     images: [
       "https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&h=300&fit=crop",
@@ -235,9 +235,9 @@ export const mockFoodListings: FoodListing[] = [
     quantity: 6,
     expiryTime: new Date(Date.now() + 2.5 * 60 * 60 * 1000), // 2.5 hours from now
     pickupLocation: {
-      latitude: 37.7849,
-      longitude: -122.4394,
-      address: "123 Fillmore St, San Francisco, CA 94115",
+      latitude: 12.976,
+      longitude: 77.603,
+      address: "Ulsoor, Bangalore, KA 560008",
     },
     images: [
       "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=300&fit=crop",

@@ -14,13 +14,23 @@ import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAuth } from "../contexts/AuthContext";
 import { FirestoreService } from "../services/api";
-import { LocationCoords } from "../types";
+import { LocationCoords, NavigationParamList } from "../types";
+import { StackNavigationProp } from "@react-navigation/stack";
 
-export default function CreateListingScreen() {
+type CreateListingScreenNavigationProp = StackNavigationProp<
+  NavigationParamList,
+  "CreateListing"
+>;
+
+interface Props {
+  navigation: CreateListingScreenNavigationProp;
+}
+
+export default function CreateListingScreen({ navigation }: Props) {
   const { user } = useAuth();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [foodType, setFoodType] = useState<"veg" | "non-veg" | "vegan">("veg");
@@ -29,9 +39,49 @@ export default function CreateListingScreen() {
     new Date(Date.now() + 4 * 60 * 60 * 1000)
   ); // 4 hours from now
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Custom date/time input states
+  const [dateInput, setDateInput] = useState("");
+  const [timeInput, setTimeInput] = useState("");
+
+  // Initialize date/time inputs when component mounts
+  React.useEffect(() => {
+    const now = new Date(expiryTime);
+    const dateStr = now.toISOString().split("T")[0]; // YYYY-MM-DD
+    const timeStr = now.toTimeString().split(" ")[0].substring(0, 5); // HH:MM
+    setDateInput(dateStr);
+    setTimeInput(timeStr);
+  }, []);
+
+  // Handle custom date/time selection
+  const handleCustomDateTimeChange = () => {
+    if (!dateInput || !timeInput) {
+      Alert.alert("Error", "Please select both date and time");
+      return;
+    }
+
+    const selectedDateTime = new Date(`${dateInput}T${timeInput}:00`);
+    const now = new Date();
+    const minTime = new Date(now.getTime() + 15 * 60 * 1000);
+
+    if (selectedDateTime < minTime) {
+      Alert.alert(
+        "Invalid Date",
+        "Expiry time must be at least 15 minutes from now."
+      );
+      return;
+    }
+
+    setExpiryTime(selectedDateTime);
+    setShowDatePicker(false);
+  };
   const [images, setImages] = useState<string[]>([]);
-  const [location, setLocation] = useState<LocationCoords | null>(null);
-  const [address, setAddress] = useState("");
+  // Default to Bangalore location
+  const [location, setLocation] = useState<LocationCoords | null>({
+    latitude: 12.9716,
+    longitude: 77.5946,
+  });
+  const [address, setAddress] = useState("Bangalore, KA");
   const [loading, setLoading] = useState(false);
 
   const pickImage = async () => {
@@ -122,7 +172,7 @@ export default function CreateListingScreen() {
       }
 
       // Create listing
-      await FirestoreService.createFoodListing({
+      console.log("Creating listing with data:", {
         donorId: user.id,
         donorName: user.name,
         donorRating: user.rating,
@@ -141,9 +191,64 @@ export default function CreateListingScreen() {
         requestedBy: [],
       });
 
-      Alert.alert("Success", "Your food listing has been created!", [
-        { text: "OK", onPress: () => resetForm() },
-      ]);
+      const listingId = await FirestoreService.createFoodListing({
+        donorId: user.id,
+        donorName: user.name,
+        donorRating: user.rating,
+        title: title.trim(),
+        description: description.trim(),
+        foodType,
+        quantity: parseInt(quantity),
+        expiryTime,
+        pickupLocation: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          address: address || "Location set",
+        },
+        images: uploadedImageUrls,
+        status: "available",
+        requestedBy: [],
+      });
+
+      console.log("Listing created successfully with ID:", listingId);
+
+      // Reset form first
+      resetForm();
+
+      // Show success message and navigate
+      Alert.alert(
+        "Success",
+        "Your food listing has been created! Would you like to view it?",
+        [
+          {
+            text: "View Listing",
+            onPress: () => {
+              // Navigate back to Home tab to show the new listing
+              console.log("Navigating to Home tab...");
+              console.log("Current navigation state:", navigation.getState());
+
+              try {
+                // Navigate to Home tab
+                navigation.navigate("Home");
+                console.log("Navigation to Home successful");
+              } catch (error) {
+                console.error("Navigation error:", error);
+                // Fallback: just close the alert and let user manually navigate
+                console.log(
+                  "Navigation failed, user will need to manually navigate"
+                );
+              }
+            },
+          },
+          {
+            text: "Stay Here",
+            style: "cancel",
+            onPress: () => {
+              console.log("User chose to stay on CreateListing screen");
+            },
+          },
+        ]
+      );
     } catch (error) {
       console.error("Error creating listing:", error);
       Alert.alert("Error", "Failed to create listing. Please try again.");
@@ -159,15 +264,8 @@ export default function CreateListingScreen() {
     setQuantity("");
     setExpiryTime(new Date(Date.now() + 4 * 60 * 60 * 1000));
     setImages([]);
-    setLocation(null);
-    setAddress("");
-  };
-
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(Platform.OS === "ios");
-    if (selectedDate) {
-      setExpiryTime(selectedDate);
-    }
+    setLocation({ latitude: 12.9716, longitude: 77.5946 });
+    setAddress("Bangalore, KA");
   };
 
   return (
@@ -367,7 +465,17 @@ export default function CreateListingScreen() {
             padding: 15,
             backgroundColor: "white",
           }}
-          onPress={() => setShowDatePicker(true)}
+          onPress={() => {
+            try {
+              setShowDatePicker(true);
+            } catch (error) {
+              console.error("Error opening date picker:", error);
+              Alert.alert(
+                "Error",
+                "Failed to open date picker. Please try again."
+              );
+            }
+          }}
         >
           <Text
             style={{
@@ -381,14 +489,176 @@ export default function CreateListingScreen() {
           <Ionicons name="calendar-outline" size={20} color="#666" />
         </TouchableOpacity>
 
+        {/* Helper text for expiry time */}
+        <Text
+          style={{
+            fontSize: 12,
+            color: "#666",
+            marginTop: 5,
+            fontStyle: "italic",
+          }}
+        >
+          Select when this food should be picked up by (max 7 days from now)
+        </Text>
+
         {showDatePicker && (
-          <DateTimePicker
-            value={expiryTime}
-            mode="datetime"
-            display="default"
-            onChange={onDateChange}
-            minimumDate={new Date()}
-          />
+          <View style={{ marginTop: 10 }}>
+            {Platform.OS === "ios" && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                }}
+              >
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "#DC143C",
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                  }}
+                  onPress={() => setShowDatePicker(false)}
+                >
+                  <Text style={{ color: "white", fontWeight: "600" }}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "#2E8B57",
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                  }}
+                  onPress={() => setShowDatePicker(false)}
+                >
+                  <Text style={{ color: "white", fontWeight: "600" }}>
+                    Done
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <View style={{ alignItems: "center", padding: 20 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: "#333",
+                  marginBottom: 15,
+                  textAlign: "center",
+                }}
+              >
+                Select Expiry Date & Time
+              </Text>
+
+              <View style={{ width: "100%", marginBottom: 15 }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "500",
+                    color: "#666",
+                    marginBottom: 8,
+                  }}
+                >
+                  Date:
+                </Text>
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    borderColor: "#ddd",
+                    borderRadius: 8,
+                    padding: 12,
+                    fontSize: 16,
+                    backgroundColor: "white",
+                  }}
+                  value={dateInput}
+                  onChangeText={setDateInput}
+                  placeholder="YYYY-MM-DD"
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <View style={{ width: "100%", marginBottom: 20 }}>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "500",
+                    color: "#666",
+                    marginBottom: 8,
+                  }}
+                >
+                  Time:
+                </Text>
+                <TextInput
+                  style={{
+                    borderWidth: 1,
+                    borderColor: "#ddd",
+                    borderRadius: 8,
+                    padding: 12,
+                    fontSize: 16,
+                    backgroundColor: "white",
+                  }}
+                  value={timeInput}
+                  onChangeText={setTimeInput}
+                  placeholder="HH:MM"
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(false)}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#DC143C",
+                    paddingVertical: 12,
+                    paddingHorizontal: 20,
+                    borderRadius: 8,
+                    marginRight: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "600",
+                      textAlign: "center",
+                    }}
+                  >
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={handleCustomDateTimeChange}
+                  style={{
+                    flex: 1,
+                    backgroundColor: "#2E8B57",
+                    paddingVertical: 12,
+                    paddingHorizontal: 20,
+                    borderRadius: 8,
+                    marginLeft: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "600",
+                      textAlign: "center",
+                    }}
+                  >
+                    Set Time
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         )}
 
         <Text

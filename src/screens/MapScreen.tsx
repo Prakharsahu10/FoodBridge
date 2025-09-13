@@ -39,8 +39,8 @@ export default function MapScreen({ navigation }: Props) {
       if (loading) {
         console.log("Location timeout reached, using default location");
         setUserLocation({
-          latitude: 37.7749,
-          longitude: -122.4194,
+          latitude: 12.9716, // Bangalore latitude
+          longitude: 77.5946, // Bangalore longitude
         });
         setLoading(false);
       }
@@ -92,8 +92,8 @@ export default function MapScreen({ navigation }: Props) {
       );
       // Set a default location for testing
       setUserLocation({
-        latitude: 37.7749,
-        longitude: -122.4194,
+        latitude: 12.9716, // Bangalore latitude
+        longitude: 77.5946, // Bangalore longitude
       });
     } finally {
       setLoading(false);
@@ -150,7 +150,16 @@ export default function MapScreen({ navigation }: Props) {
   };
 
   const calculateDistance = (listing: FoodListing): string => {
-    if (!userLocation) return "Distance unknown";
+    if (
+      !userLocation ||
+      !listing.pickupLocation ||
+      typeof userLocation.latitude !== "number" ||
+      typeof userLocation.longitude !== "number" ||
+      typeof listing.pickupLocation.latitude !== "number" ||
+      typeof listing.pickupLocation.longitude !== "number"
+    ) {
+      return "Distance unknown";
+    }
 
     const R = 6371; // Radius of the Earth in km
     const dLat = deg2rad(
@@ -168,6 +177,10 @@ export default function MapScreen({ navigation }: Props) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c; // Distance in km
 
+    // If distance is abnormally large, show unknown
+    if (!isFinite(distance) || distance > 1000) {
+      return "Distance unknown";
+    }
     if (distance < 1) {
       return `${Math.round(distance * 1000)}m away`;
     }
@@ -179,11 +192,7 @@ export default function MapScreen({ navigation }: Props) {
   };
 
   const renderFoodCard = ({ item }: { item: FoodListing }) => (
-    <View
-      style={{
-        marginBottom: 10, // mb-2.5
-      }}
-    >
+    <View style={{ marginBottom: 10 }}>
       <FoodCard
         listing={item}
         onPress={() =>
@@ -191,27 +200,8 @@ export default function MapScreen({ navigation }: Props) {
         }
         onRequestPress={() => handleRequestFood(item)}
         showRequestButton={user?.role === "receiver"}
+        distance={calculateDistance(item)}
       />
-      <View
-        style={{
-          flexDirection: "row", // flex-row
-          alignItems: "center", // items-center
-          justifyContent: "flex-end", // justify-end
-          marginTop: 8, // mt-2
-          paddingHorizontal: 15, // px-4
-        }}
-      >
-        <Ionicons name="location-outline" size={16} color="#666" />
-        <Text
-          style={{
-            fontSize: 12, // text-xs
-            color: "#666", // text-gray-600
-            marginLeft: 4, // ml-1
-          }}
-        >
-          {calculateDistance(item)}
-        </Text>
-      </View>
     </View>
   );
 

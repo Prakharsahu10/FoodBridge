@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../contexts/AuthContext";
-import { getMockNearbyListings, getMockUserListings } from "../data/mockData";
+import { getFoodListings } from "../services/database";
 import { FoodListing } from "../types";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { NavigationParamList } from "../types";
@@ -34,20 +34,11 @@ export default function HomeScreen({ navigation }: Props) {
 
   const loadListings = async () => {
     try {
-      if (user?.role === "donor") {
-        // Show donor's own listings
-        const userListings = await getMockUserListings(user.id);
-        setListings(userListings);
-      } else {
-        // Show nearby available listings for receivers
-        // For demo purposes, we'll use a default location
-        const nearbyListings = await getMockNearbyListings(
-          37.7749, // San Francisco latitude (replace with user's location)
-          -122.4194, // San Francisco longitude
-          25 // 25km radius
-        );
-        setListings(nearbyListings);
-      }
+      console.log("Loading listings from Firebase...");
+      // Load all available listings from Firebase
+      const availableListings = await getFoodListings(50); // Get up to 50 listings
+      console.log("Loaded listings:", availableListings.length);
+      setListings(availableListings);
     } catch (error) {
       console.error("Error loading listings:", error);
       Alert.alert("Error", "Failed to load food listings");
@@ -60,6 +51,16 @@ export default function HomeScreen({ navigation }: Props) {
   useEffect(() => {
     loadListings();
   }, [user]);
+
+  // Refresh listings when screen comes into focus (e.g., after creating a new listing)
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      console.log("HomeScreen focused, refreshing listings...");
+      loadListings();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   const onRefresh = () => {
     setRefreshing(true);
