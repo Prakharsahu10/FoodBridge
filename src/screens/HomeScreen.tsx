@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../contexts/AuthContext";
-import { getFoodListings } from "../services/database";
+import { getFoodListings, deleteFoodListing } from "../services/database";
 import { FoodListing } from "../types";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { NavigationParamList } from "../types";
@@ -32,6 +32,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Load food listings from Firebase database
   const loadListings = async () => {
     try {
       console.log("Loading listings from Firebase...");
@@ -67,6 +68,7 @@ export default function HomeScreen({ navigation }: Props) {
     loadListings();
   };
 
+  // Handle food request from receiver to donor
   const handleRequestFood = async (listingId: string) => {
     if (!user) return;
 
@@ -85,6 +87,34 @@ export default function HomeScreen({ navigation }: Props) {
       console.error("Error requesting food:", error);
       Alert.alert("Error", "Failed to send request");
     }
+  };
+
+  // Handle deletion of food listing with confirmation
+  const handleDeleteListing = (listingId: string) => {
+    Alert.alert(
+      "Delete Listing",
+      "Are you sure you want to delete this food listing? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteFoodListing(listingId);
+              Alert.alert("Success", "Listing deleted successfully");
+              loadListings(); // Refresh the list
+            } catch (error) {
+              console.error("Error deleting listing:", error);
+              Alert.alert("Error", "Failed to delete listing");
+            }
+          },
+        },
+      ]
+    );
   };
 
   const getStatusColor = (status: string) => {
@@ -129,6 +159,12 @@ export default function HomeScreen({ navigation }: Props) {
       onPress={() =>
         navigation.navigate("ListingDetail", { listingId: item.id })
       }
+      onLongPress={() => {
+        // Only allow delete if user is the donor of this listing
+        if (user?.id === item.donorId) {
+          handleDeleteListing(item.id);
+        }
+      }}
     >
       {item.images && item.images.length > 0 && (
         <Image

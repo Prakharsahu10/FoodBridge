@@ -34,6 +34,7 @@ export default function RegisterScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
 
+  // Handle user registration with validation
   const handleRegister = async () => {
     if (!email || !password || !name) {
       Alert.alert("Error", "Please fill in all required fields");

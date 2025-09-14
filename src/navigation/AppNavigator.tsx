@@ -18,6 +18,7 @@ import CreateListingScreen from "../screens/CreateListingScreen";
 import ListingDetailScreen from "../screens/ListingDetailScreen";
 import ChatScreen from "../screens/ChatScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import IncomingRequestsScreen from "../screens/IncomingRequestsScreen";
 
 const Stack = createStackNavigator<NavigationParamList>();
 const Tab = createBottomTabNavigator();
@@ -68,13 +69,20 @@ function HomeTabs() {
         options={{ title: "Feed" }}
       />
       <Tab.Screen name="Map" component={MapScreen} options={{ title: "Map" }} />
-      {/* Show donate tab only for donors */}
+      {/* Show donate tab and requests tab only for donors */}
       {user?.role === "donor" && (
-        <Tab.Screen
-          name="CreateListing"
-          component={CreateListingScreen}
-          options={{ title: "Donate" }}
-        />
+        <>
+          <Tab.Screen
+            name="CreateListing"
+            component={CreateListingScreen}
+            options={{ title: "Donate" }}
+          />
+          <Tab.Screen
+            name="IncomingRequests"
+            component={IncomingRequestsScreen}
+            options={{ title: "Requests" }}
+          />
+        </>
       )}
       <Tab.Screen
         name="Profile"
@@ -103,6 +111,11 @@ function MainStack() {
         name="Chat"
         component={ChatScreen}
         options={{ title: "Chat" }}
+      />
+      <Stack.Screen
+        name="IncomingRequests"
+        component={IncomingRequestsScreen}
+        options={{ title: "Requests" }}
       />
     </Stack.Navigator>
   );

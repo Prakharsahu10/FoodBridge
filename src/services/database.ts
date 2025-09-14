@@ -1,3 +1,4 @@
+// Firebase Firestore database operations for FoodBridge app
 import {
   collection,
   doc,
@@ -15,7 +16,8 @@ import {
 import { db } from "./firebase";
 import { FoodListing, FoodRequest, ChatMessage, Rating, User } from "../types";
 
-// Food Listings
+// ===== FOOD LISTINGS OPERATIONS =====
+// Create new food listing in Firestore
 export const createFoodListing = async (
   listing: Omit<FoodListing, "id" | "createdAt" | "updatedAt">
 ) => {
@@ -27,10 +29,11 @@ export const createFoodListing = async (
   return docRef.id;
 };
 
+// Fetch available food listings with pagination
 export const getFoodListings = async (limitCount: number = 20) => {
   try {
     console.log("Database: Getting food listings from Firestore...");
-    // Simplified query without composite index requirement
+    // Query listings ordered by creation date (newest first)
     const q = query(
       collection(db, "listings"),
       orderBy("createdAt", "desc"),
@@ -44,7 +47,7 @@ export const getFoodListings = async (limitCount: number = 20) => {
       "documents"
     );
 
-    // Filter for available listings on the client side
+    // Convert Firestore timestamps to Date objects and filter available listings
     const listings = querySnapshot.docs
       .map((doc) => {
         const data = doc.data();
@@ -60,9 +63,9 @@ export const getFoodListings = async (limitCount: number = 20) => {
           createdAt: data.createdAt.toDate(),
           updatedAt: data.updatedAt.toDate(),
           expiryTime: data.expiryTime.toDate(),
-        };
+        } as FoodListing;
       })
-      .filter((listing) => listing.status === "available") as FoodListing[];
+      .filter((listing) => listing.status === "available");
 
     console.log("Database: Returning", listings.length, "listings");
     return listings;
@@ -72,6 +75,7 @@ export const getFoodListings = async (limitCount: number = 20) => {
   }
 };
 
+// Get single food listing by ID
 export const getFoodListingById = async (id: string) => {
   const docRef = doc(db, "listings", id);
   const docSnap = await getDoc(docRef);
@@ -89,6 +93,7 @@ export const getFoodListingById = async (id: string) => {
   return null;
 };
 
+// Update existing food listing
 export const updateFoodListing = async (
   id: string,
   updates: Partial<FoodListing>
@@ -100,7 +105,14 @@ export const updateFoodListing = async (
   });
 };
 
-// Food Requests
+// Delete food listing permanently
+export const deleteFoodListing = async (id: string) => {
+  const docRef = doc(db, "listings", id);
+  await deleteDoc(docRef);
+};
+
+// ===== FOOD REQUESTS OPERATIONS =====
+// Create new food request from receiver to donor
 export const createFoodRequest = async (
   request: Omit<FoodRequest, "id" | "createdAt">
 ) => {
@@ -111,6 +123,7 @@ export const createFoodRequest = async (
   return docRef.id;
 };
 
+// Get all requests for a specific food listing
 export const getFoodRequestsByListing = async (listingId: string) => {
   const q = query(
     collection(db, "requests"),
@@ -126,7 +139,8 @@ export const getFoodRequestsByListing = async (listingId: string) => {
   })) as FoodRequest[];
 };
 
-// Chat Messages
+// ===== CHAT MESSAGES OPERATIONS =====
+// Send new chat message between donor and receiver
 export const sendChatMessage = async (
   message: Omit<ChatMessage, "id" | "timestamp">
 ) => {
@@ -137,6 +151,7 @@ export const sendChatMessage = async (
   return docRef.id;
 };
 
+// Get chat messages for a specific listing
 export const getChatMessages = async (
   listingId: string,
   limitCount: number = 50
@@ -156,7 +171,8 @@ export const getChatMessages = async (
   })) as ChatMessage[];
 };
 
-// User Management
+// ===== USER MANAGEMENT OPERATIONS =====
+// Update user profile information
 export const updateUserProfile = async (
   userId: string,
   updates: Partial<User>
@@ -168,6 +184,7 @@ export const updateUserProfile = async (
   });
 };
 
+// Get user profile by ID
 export const getUserById = async (userId: string) => {
   const docRef = doc(db, "users", userId);
   const docSnap = await getDoc(docRef);

@@ -38,7 +38,14 @@
     "extra": {
       "eas": {
         "projectId": "your-eas-project-id"
-      }
+      },
+      "firebaseApiKey": "your-api-key-here",
+      "firebaseAuthDomain": "your-project.firebaseapp.com",
+      "firebaseProjectId": "your-project-id",
+      "firebaseStorageBucket": "your-project.appspot.com",
+      "firebaseMessagingSenderId": "123456789",
+      "firebaseAppId": "your-app-id",
+      "firebaseMeasurementId": "your-measurement-id"
     }
   }
 }

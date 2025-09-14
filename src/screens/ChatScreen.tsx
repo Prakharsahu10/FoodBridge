@@ -35,6 +35,7 @@ export default function ChatScreen({ route }: Props) {
   const [loading, setLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
+  // Subscribe to real-time chat messages for this listing
   useEffect(() => {
     const unsubscribe = FirestoreService.subscribeToMessages(
       listingId,
@@ -50,6 +51,7 @@ export default function ChatScreen({ route }: Props) {
     return unsubscribe;
   }, [listingId]);
 
+  // Send new chat message to the conversation
   const sendMessage = async () => {
     if (!newMessage.trim() || !user) return;
 
@@ -70,6 +72,7 @@ export default function ChatScreen({ route }: Props) {
     }
   };
 
+  // Render individual chat message with sender styling
   const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isMyMessage = item.senderId === user?.id;
 

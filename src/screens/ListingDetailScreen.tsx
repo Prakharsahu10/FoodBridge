@@ -14,6 +14,7 @@ import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useAuth } from "../contexts/AuthContext";
 import { FirestoreService } from "../services/api";
+import { deleteFoodListing } from "../services/database";
 import { FoodListing, FoodRequest, NavigationParamList } from "../types";
 
 type ListingDetailScreenRouteProp = RouteProp<
@@ -41,6 +42,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
     loadListingDetails();
   }, [listingId]);
 
+  // Load detailed information for the selected food listing
   const loadListingDetails = async () => {
     try {
       const listingData = await FirestoreService.getFoodListing(listingId);
@@ -66,6 +68,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
     }
   };
 
+  // Handle food request from receiver to donor
   const handleRequestFood = async () => {
     if (!user || !listing) return;
 
@@ -84,6 +87,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
     }
   };
 
+  // Accept food request and mark listing as claimed
   const handleAcceptRequest = async (
     requestId: string,
     requesterId: string
@@ -113,6 +117,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
     }
   };
 
+  // Reject food request from receiver
   const handleRejectRequest = async (requestId: string) => {
     try {
       await FirestoreService.updateFoodRequest(requestId, {
@@ -126,6 +131,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
     }
   };
 
+  // Navigate to chat screen with the other user
   const handleStartChat = () => {
     if (!listing) return;
 
@@ -134,6 +140,36 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
     if (otherUserId) {
       navigation.navigate("Chat", { listingId: listing.id, otherUserId });
     }
+  };
+
+  // Delete food listing with confirmation dialog
+  const handleDeleteListing = () => {
+    if (!listing) return;
+
+    Alert.alert(
+      "Delete Listing",
+      "Are you sure you want to delete this food listing? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteFoodListing(listing.id);
+              Alert.alert("Success", "Listing deleted successfully");
+              navigation.goBack();
+            } catch (error) {
+              console.error("Error deleting listing:", error);
+              Alert.alert("Error", "Failed to delete listing");
+            }
+          },
+        },
+      ]
+    );
   };
 
   const formatTimeLeft = (expiryTime: Date) => {
@@ -647,6 +683,35 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
                 }}
               >
                 Start Chat
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {isDonor && (
+            <TouchableOpacity
+              style={{
+                // deleteButton - flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#DC2626", paddingVertical: 15, borderRadius: 10, gap: 8
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#DC2626",
+                paddingVertical: 15,
+                borderRadius: 10,
+                gap: 8,
+              }}
+              onPress={handleDeleteListing}
+            >
+              <Ionicons name="trash-outline" size={20} color="white" />
+              <Text
+                style={{
+                  // deleteButtonText - color: "white", fontSize: 16, fontWeight: "600"
+                  color: "white",
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+              >
+                Delete Listing
               </Text>
             </TouchableOpacity>
           )}

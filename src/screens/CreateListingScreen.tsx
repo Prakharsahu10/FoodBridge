@@ -84,6 +84,7 @@ export default function CreateListingScreen({ navigation }: Props) {
   const [address, setAddress] = useState("Bangalore, KA");
   const [loading, setLoading] = useState(false);
 
+  // Pick image from device gallery for food listing
   const pickImage = async () => {
     if (images.length >= 3) {
       Alert.alert("Limit Reached", "You can only add up to 3 images");
@@ -102,10 +103,12 @@ export default function CreateListingScreen({ navigation }: Props) {
     }
   };
 
+  // Remove image from food listing
   const removeImage = (index: number) => {
     setImages(images.filter((_, i) => i !== index));
   };
 
+  // Get user's current GPS location for pickup address
   const getCurrentLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -140,6 +143,7 @@ export default function CreateListingScreen({ navigation }: Props) {
     }
   };
 
+  // Submit new food listing to database
   const handleSubmit = async () => {
     if (!title || !description || !quantity || !location || !user) {
       Alert.alert(

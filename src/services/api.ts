@@ -26,11 +26,16 @@ import { db, storage } from "./firebase";
 import { User, FoodListing, FoodRequest, ChatMessage, Rating } from "../types";
 
 /**
- * Firestore service class for all database operations
- * Provides methods for users, listings, requests, chats, and ratings
+ * Firestore service class for all database operations.
+ * Provides methods for users, listings, requests, chats, and ratings.
+ * Each method interacts with Firestore or Firebase Storage to perform CRUD and query operations.
  */
 export class FirestoreService {
-  // User CRUD operations
+  /**
+   * Creates or updates a user document in Firestore.
+   * @param userId - The unique user ID.
+   * @param userData - User data excluding id and createdAt.
+   */
   static async createUser(
     userId: string,
     userData: Omit<User, "id" | "createdAt">
@@ -42,6 +47,11 @@ export class FirestoreService {
     });
   }
 
+  /**
+   * Retrieves a user document by userId.
+   * @param userId - The unique user ID.
+   * @returns User object or null if not found.
+   */
   static async getUser(userId: string): Promise<User | null> {
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -52,6 +62,11 @@ export class FirestoreService {
     return null;
   }
 
+  /**
+   * Updates a user document with provided fields.
+   * @param userId - The unique user ID.
+   * @param updates - Partial user fields to update.
+   */
   static async updateUser(
     userId: string,
     updates: Partial<User>
@@ -60,7 +75,11 @@ export class FirestoreService {
     await updateDoc(userRef, updates);
   }
 
-  // Food listing CRUD operations
+  /**
+   * Creates a new food listing document.
+   * @param listingData - Listing data excluding id, createdAt, updatedAt.
+   * @returns The new listing's document ID.
+   */
   static async createFoodListing(
     listingData: Omit<FoodListing, "id" | "createdAt" | "updatedAt">
   ): Promise<string> {
@@ -73,6 +92,11 @@ export class FirestoreService {
     return docRef.id;
   }
 
+  /**
+   * Retrieves a food listing by its ID.
+   * @param listingId - The listing's document ID.
+   * @returns FoodListing object or null if not found.
+   */
   static async getFoodListing(listingId: string): Promise<FoodListing | null> {
     const listingRef = doc(db, "listings", listingId);
     const listingSnap = await getDoc(listingRef);
@@ -83,6 +107,11 @@ export class FirestoreService {
     return null;
   }
 
+  /**
+   * Updates a food listing document with provided fields.
+   * @param listingId - The listing's document ID.
+   * @param updates - Partial listing fields to update.
+   */
   static async updateFoodListing(
     listingId: string,
     updates: Partial<FoodListing>
@@ -94,7 +123,14 @@ export class FirestoreService {
     });
   }
 
-  // Get nearby listings with geospatial filtering
+  /**
+   * Gets nearby food listings within a radius from the user's location.
+   * Uses a simple Haversine filter on the client side.
+   * @param userLat - User's latitude.
+   * @param userLng - User's longitude.
+   * @param radiusKm - Search radius in kilometers (default 10).
+   * @returns Array of FoodListing objects within the radius.
+   */
   static async getNearbyListings(
     userLat: number,
     userLng: number,
@@ -112,25 +148,47 @@ export class FirestoreService {
     const querySnapshot = await getDocs(q);
     const listings: FoodListing[] = [];
 
-    querySnapshot.forEach((doc) => {
-      const data = doc.data() as FoodListing;
-      // Calculate distance
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data() as any;
+      // Convert Firestore Timestamp to JS Date for expiryTime, createdAt, updatedAt
+      const expiryTime =
+        data.expiryTime && data.expiryTime.toDate
+          ? data.expiryTime.toDate()
+          : data.expiryTime;
+      const createdAt =
+        data.createdAt && data.createdAt.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt;
+      const updatedAt =
+        data.updatedAt && data.updatedAt.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt;
+      // Calculate distance from user to listing
       const distance = this.calculateDistance(
         userLat,
         userLng,
         data.pickupLocation.latitude,
         data.pickupLocation.longitude
       );
-
       if (distance <= radiusKm) {
-        listings.push({ ...data, id: doc.id });
+        listings.push({
+          ...data,
+          id: docSnap.id,
+          expiryTime,
+          createdAt,
+          updatedAt,
+        });
       }
     });
 
     return listings;
   }
 
-  // Get user's own listings
+  /**
+   * Gets all listings created by a specific user.
+   * @param userId - The user's ID (donor).
+   * @returns Array of FoodListing objects.
+   */
   static async getUserListings(userId: string): Promise<FoodListing[]> {
     const listingsRef = collection(db, "listings");
     const q = query(
@@ -149,7 +207,11 @@ export class FirestoreService {
     return listings;
   }
 
-  // Food request operations
+  /**
+   * Creates a new food request document.
+   * @param requestData - Request data excluding id and createdAt.
+   * @returns The new request's document ID.
+   */
   static async createFoodRequest(
     requestData: Omit<FoodRequest, "id" | "createdAt">
   ): Promise<string> {
@@ -161,6 +223,11 @@ export class FirestoreService {
     return docRef.id;
   }
 
+  /**
+   * Updates a food request document with provided fields.
+   * @param requestId - The request's document ID.
+   * @param updates - Partial request fields to update.
+   */
   static async updateFoodRequest(
     requestId: string,
     updates: Partial<FoodRequest>
@@ -169,6 +236,11 @@ export class FirestoreService {
     await updateDoc(requestRef, updates);
   }
 
+  /**
+   * Gets all requests for a specific listing.
+   * @param listingId - The listing's document ID.
+   * @returns Array of FoodRequest objects.
+   */
   static async getListingRequests(listingId: string): Promise<FoodRequest[]> {
     const requestsRef = collection(db, "requests");
     const q = query(
@@ -187,7 +259,11 @@ export class FirestoreService {
     return requests;
   }
 
-  // Chat message operations
+  /**
+   * Sends a chat message by creating a new message document.
+   * @param messageData - Message data excluding id and timestamp.
+   * @returns The new message's document ID.
+   */
   static async sendMessage(
     messageData: Omit<ChatMessage, "id" | "timestamp">
   ): Promise<string> {
@@ -199,7 +275,13 @@ export class FirestoreService {
     return docRef.id;
   }
 
-  // Real-time message subscription
+  /**
+   * Subscribes to real-time chat messages for a listing.
+   * Calls the callback with the latest messages on update.
+   * @param listingId - The listing's document ID.
+   * @param callback - Function to call with array of ChatMessage objects.
+   * @returns Unsubscribe function.
+   */
   static subscribeToMessages(
     listingId: string,
     callback: (messages: ChatMessage[]) => void
@@ -220,7 +302,12 @@ export class FirestoreService {
     });
   }
 
-  // Image upload to Firebase Storage
+  /**
+   * Uploads an image to Firebase Storage and returns its download URL.
+   * @param uri - The local URI of the image.
+   * @param path - The storage path in Firebase.
+   * @returns The download URL of the uploaded image.
+   */
   static async uploadImage(uri: string, path: string): Promise<string> {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -231,7 +318,11 @@ export class FirestoreService {
     return await getDownloadURL(imageRef);
   }
 
-  // Rating and review operations
+  /**
+   * Creates a new rating document.
+   * @param ratingData - Rating data excluding id and createdAt.
+   * @returns The new rating's document ID.
+   */
   static async createRating(
     ratingData: Omit<Rating, "id" | "createdAt">
   ): Promise<string> {
@@ -243,6 +334,11 @@ export class FirestoreService {
     return docRef.id;
   }
 
+  /**
+   * Gets all ratings for a specific user.
+   * @param userId - The user who was rated.
+   * @returns Array of Rating objects.
+   */
   static async getUserRatings(userId: string): Promise<Rating[]> {
     const ratingsRef = collection(db, "ratings");
     const q = query(
@@ -261,7 +357,14 @@ export class FirestoreService {
     return ratings;
   }
 
-  // Calculate distance between two geographic points using Haversine formula
+  /**
+   * Calculates the distance between two geographic points using the Haversine formula.
+   * @param lat1 - Latitude of point 1.
+   * @param lng1 - Longitude of point 1.
+   * @param lat2 - Latitude of point 2.
+   * @param lng2 - Longitude of point 2.
+   * @returns Distance in kilometers.
+   */
   private static calculateDistance(
     lat1: number,
     lng1: number,
@@ -282,6 +385,11 @@ export class FirestoreService {
     return d;
   }
 
+  /**
+   * Converts degrees to radians.
+   * @param deg - Angle in degrees.
+   * @returns Angle in radians.
+   */
   private static deg2rad(deg: number): number {
     return deg * (Math.PI / 180);
   }

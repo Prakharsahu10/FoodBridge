@@ -1,7 +1,8 @@
 // Mock data for development and testing purposes
 import { FoodListing } from "../types";
 
-// Sample food listings for UI testing
+// ===== SAMPLE FOOD LISTINGS =====
+// Sample food listings for UI testing and development
 export const mockFoodListings: FoodListing[] = [
   {
     id: "listing-1",
@@ -323,7 +324,8 @@ export const mockFoodListings: FoodListing[] = [
   },
 ];
 
-// Simulates API call to fetch nearby food listings
+// ===== MOCK API FUNCTIONS =====
+// Simulates API call to fetch nearby food listings based on location
 export const getMockNearbyListings = async (
   latitude: number,
   longitude: number,
@@ -336,7 +338,7 @@ export const getMockNearbyListings = async (
   return mockFoodListings.filter((listing) => listing.status === "available");
 };
 
-// Simulates API call to fetch user's food listings
+// Simulates API call to fetch user's own food listings
 export const getMockUserListings = async (
   userId: string
 ): Promise<FoodListing[]> => {

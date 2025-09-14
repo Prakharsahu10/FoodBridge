@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { useAuth } from "../contexts/AuthContext";
-import { getMockNearbyListings } from "../data/mockData";
+import { FirestoreService } from "../services/api";
 import { FoodCard } from "../components";
 import { FoodListing, LocationCoords } from "../types";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -55,6 +55,7 @@ export default function MapScreen({ navigation }: Props) {
     }
   }, [userLocation]);
 
+  // Get user's current GPS location with permission handling
   const getCurrentLocation = async () => {
     try {
       console.log("Requesting location permission...");
@@ -100,23 +101,29 @@ export default function MapScreen({ navigation }: Props) {
     }
   };
 
+  // Load food listings within specified radius from user location
   const loadNearbyListings = async () => {
     if (!userLocation) return;
 
     console.log("Loading nearby listings for location:", userLocation);
     setRefreshing(true);
     try {
-      const nearbyListings = await getMockNearbyListings(
+      const nearbyListings = await FirestoreService.getNearbyListings(
         userLocation.latitude,
         userLocation.longitude,
         25 // 25km radius
       );
       console.log("Nearby listings received:", nearbyListings.length);
 
+      // Only show listings that are available and not created by the current user
       const availableListings = nearbyListings.filter(
-        (listing: FoodListing) => listing.status === "available"
+        (listing: FoodListing) =>
+          listing.status === "available" && listing.donorId !== user?.id
       );
-      console.log("Available listings:", availableListings.length);
+      console.log(
+        "Available listings (excluding own):",
+        availableListings.length
+      );
 
       setListings(availableListings);
     } catch (error) {
@@ -133,12 +140,20 @@ export default function MapScreen({ navigation }: Props) {
     if (!user) return;
 
     try {
-      // Mock food request - just show success message
-      console.log("Mock food request:", {
+      // 1. Create a new food request in Firestore
+      await FirestoreService.createFoodRequest({
         listingId: listing.id,
         requesterId: user.id,
         requesterName: user.name,
         status: "pending",
+      });
+
+      // 2. Update the listing's requestedBy array in Firestore
+      const updatedRequestedBy = Array.isArray(listing.requestedBy)
+        ? [...listing.requestedBy, user.id]
+        : [user.id];
+      await FirestoreService.updateFoodListing(listing.id, {
+        requestedBy: updatedRequestedBy,
       });
 
       Alert.alert("Success", "Your request has been sent!");
@@ -149,6 +164,7 @@ export default function MapScreen({ navigation }: Props) {
     }
   };
 
+  // Calculate distance between user and food listing using Haversine formula
   const calculateDistance = (listing: FoodListing): string => {
     if (
       !userLocation ||
