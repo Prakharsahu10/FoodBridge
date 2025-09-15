@@ -7,6 +7,7 @@ import {
   Animated,
   Dimensions,
   StyleSheet,
+  SafeAreaView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -59,91 +60,93 @@ export default function SplashScreen() {
   });
 
   return (
-    <LinearGradient
-      colors={["#667eea", "#764ba2", "#2E8B57"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.container}
-    >
-      <View style={styles.content}>
-        {/* Animated Logo Container */}
-        <Animated.View
-          style={[
-            styles.logoContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ scale: scaleAnim }, { translateY: slideAnim }],
-            },
-          ]}
-        >
-          {/* Main Logo Icon */}
+    <SafeAreaView style={{ flex: 1 }}>
+      <LinearGradient
+        colors={["#667eea", "#764ba2", "#2E8B57"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          {/* Animated Logo Container */}
           <Animated.View
             style={[
-              styles.iconContainer,
+              styles.logoContainer,
               {
-                transform: [{ rotate }],
+                opacity: fadeAnim,
+                transform: [{ scale: scaleAnim }, { translateY: slideAnim }],
               },
             ]}
           >
-            <Ionicons name="restaurant" size={80} color="white" />
+            {/* Main Logo Icon */}
+            <Animated.View
+              style={[
+                styles.iconContainer,
+                {
+                  transform: [{ rotate }],
+                },
+              ]}
+            >
+              <Ionicons name="restaurant" size={80} color="white" />
+            </Animated.View>
+
+            {/* Bridge Icon */}
+            <View style={styles.bridgeContainer}>
+              <Ionicons name="link" size={40} color="rgba(255,255,255,0.8)" />
+            </View>
           </Animated.View>
 
-          {/* Bridge Icon */}
-          <View style={styles.bridgeContainer}>
-            <Ionicons name="link" size={40} color="rgba(255,255,255,0.8)" />
-          </View>
-        </Animated.View>
+          {/* App Title */}
+          <Animated.View
+            style={[
+              styles.titleContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}
+          >
+            <Text style={styles.title}>FoodBridge</Text>
+            <View style={styles.titleUnderline} />
+          </Animated.View>
 
-        {/* App Title */}
-        <Animated.View
-          style={[
-            styles.titleContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          <Text style={styles.title}>FoodBridge</Text>
-          <View style={styles.titleUnderline} />
-        </Animated.View>
+          {/* Subtitle */}
+          <Animated.View
+            style={[
+              styles.subtitleContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}
+          >
+            <Text style={styles.subtitle}>
+              Connecting surplus food with those in need
+            </Text>
+          </Animated.View>
 
-        {/* Subtitle */}
-        <Animated.View
-          style={[
-            styles.subtitleContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          <Text style={styles.subtitle}>
-            Connecting surplus food with those in need
-          </Text>
-        </Animated.View>
+          {/* Loading Indicator */}
+          <Animated.View
+            style={[
+              styles.loadingContainer,
+              {
+                opacity: fadeAnim,
+              },
+            ]}
+          >
+            <ActivityIndicator size="large" color="white" />
+            <Text style={styles.loadingText}>Loading...</Text>
+          </Animated.View>
+        </View>
 
-        {/* Loading Indicator */}
-        <Animated.View
-          style={[
-            styles.loadingContainer,
-            {
-              opacity: fadeAnim,
-            },
-          ]}
-        >
-          <ActivityIndicator size="large" color="white" />
-          <Text style={styles.loadingText}>Loading...</Text>
-        </Animated.View>
-      </View>
-
-      {/* Decorative Elements */}
-      <View style={styles.decorativeElements}>
-        <View style={[styles.circle, styles.circle1]} />
-        <View style={[styles.circle, styles.circle2]} />
-        <View style={[styles.circle, styles.circle3]} />
-      </View>
-    </LinearGradient>
+        {/* Decorative Elements */}
+        <View style={styles.decorativeElements}>
+          <View style={[styles.circle, styles.circle1]} />
+          <View style={[styles.circle, styles.circle2]} />
+          <View style={[styles.circle, styles.circle3]} />
+        </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 

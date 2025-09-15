@@ -9,6 +9,7 @@ import {
   Alert,
   FlatList,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -355,246 +356,173 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
     listing.status === "claimed" && (isDonor || listing.claimedBy === user?.id);
 
   return (
-    <ScrollView
-      style={{
-        flex: 1,
-        backgroundColor: "#F0F8FF", // bg-blue-50
-      }}
-    >
-      {listing.images && listing.images.length > 0 && (
-        <ScrollView
-          horizontal
-          pagingEnabled
-          style={{
-            height: 250, // h-64
-          }}
-        >
-          {listing.images.map((uri, index) => (
-            <Image
-              key={index}
-              source={{ uri }}
-              style={{
-                width: 400, // w-96
-                height: 250, // h-64
-                resizeMode: "cover",
-              }}
-            />
-          ))}
-        </ScrollView>
-      )}
-
-      <View
-        style={{
-          padding: 20, // p-5
-          backgroundColor: "white", // bg-white
-          marginTop: -10, // -mt-2.5
-          borderTopLeftRadius: 20, // rounded-tl-2xl
-          borderTopRightRadius: 20, // rounded-tr-2xl
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row", // flex-row
-            justifyContent: "space-between", // justify-between
-            alignItems: "center", // items-center
-            marginBottom: 15, // mb-4
-          }}
-        >
-          <Text
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F0F8FF" }}>
+      <ScrollView style={{ flex: 1 }}>
+        {listing.images && listing.images.length > 0 && (
+          <ScrollView
+            horizontal
+            pagingEnabled
             style={{
-              fontSize: 24, // text-2xl
-              fontWeight: "bold", // font-bold
-              color: "#333", // text-gray-800
-              flex: 1,
+              height: 250, // h-64
             }}
           >
-            {listing.title}
-          </Text>
+            {listing.images.map((uri, index) => (
+              <Image
+                key={index}
+                source={{ uri }}
+                style={{
+                  width: 400, // w-96
+                  height: 250, // h-64
+                  resizeMode: "cover",
+                }}
+              />
+            ))}
+          </ScrollView>
+        )}
+
+        <View
+          style={{
+            padding: 20, // p-5
+            backgroundColor: "white", // bg-white
+            marginTop: -10, // -mt-2.5
+            borderTopLeftRadius: 20, // rounded-tl-2xl
+            borderTopRightRadius: 20, // rounded-tr-2xl
+          }}
+        >
           <View
             style={{
-              paddingHorizontal: 12, // px-3
-              paddingVertical: 6, // py-1.5
-              borderRadius: 15, // rounded-full
-              backgroundColor: getStatusColor(listing.status),
+              flexDirection: "row", // flex-row
+              justifyContent: "space-between", // justify-between
+              alignItems: "center", // items-center
+              marginBottom: 15, // mb-4
             }}
           >
             <Text
               style={{
-                color: "white", // text-white
-                fontSize: 12, // text-xs
+                fontSize: 24, // text-2xl
                 fontWeight: "bold", // font-bold
-              }}
-            >
-              {listing.status.toUpperCase()}
-            </Text>
-          </View>
-        </View>
-
-        <Text
-          style={{
-            fontSize: 16, // text-base
-            color: "#666", // text-gray-600
-            lineHeight: 24, // leading-6
-            marginBottom: 20, // mb-5
-          }}
-        >
-          {listing.description}
-        </Text>
-
-        <View
-          style={{
-            marginBottom: 20, // mb-5
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row", // flex-row
-              alignItems: "center", // items-center
-              marginBottom: 10, // mb-2.5
-            }}
-          >
-            <Ionicons name="people-outline" size={20} color="#666" />
-            <Text
-              style={{
-                fontSize: 16, // text-base
                 color: "#333", // text-gray-800
-                marginLeft: 10, // ml-2.5
+                flex: 1,
               }}
             >
-              Serves {listing.quantity} people
+              {listing.title}
             </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row", // flex-row
-              alignItems: "center", // items-center
-              marginBottom: 10, // mb-2.5
-            }}
-          >
-            <Ionicons name="leaf-outline" size={20} color="#666" />
-            <Text
-              style={{
-                fontSize: 16, // text-base
-                color: "#333", // text-gray-800
-                marginLeft: 10, // ml-2.5
-              }}
-            >
-              {listing.foodType}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row", // flex-row
-              alignItems: "center", // items-center
-              marginBottom: 10, // mb-2.5
-            }}
-          >
-            <Ionicons name="time-outline" size={20} color="#666" />
-            <Text
-              style={{
-                fontSize: 16, // text-base
-                color: "#FF6B35", // text-orange-500
-                marginLeft: 10, // ml-2.5
-              }}
-            >
-              {formatTimeLeft(listing.expiryTime)}
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row", // flex-row
-              alignItems: "center", // items-center
-              marginBottom: 10, // mb-2.5
-            }}
-          >
-            <Ionicons name="location-outline" size={20} color="#666" />
-            <Text
-              style={{
-                fontSize: 16, // text-base
-                color: "#333", // text-gray-800
-                marginLeft: 10, // ml-2.5
-              }}
-            >
-              {listing.pickupLocation.address}
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            // donorSection - backgroundColor: "white", padding: 20, marginTop: 15, borderRadius: 10
-            backgroundColor: "white",
-            padding: 20,
-            marginTop: 15,
-            borderRadius: 10,
-          }}
-        >
-          <Text
-            style={{
-              // sectionTitle - fontSize: 18, fontWeight: "bold", color: "#333", marginBottom: 15
-              fontSize: 18,
-              fontWeight: "bold",
-              color: "#333",
-              marginBottom: 15,
-            }}
-          >
-            Donor Information
-          </Text>
-          <View
-            style={{
-              // donorInfo - flexDirection: "row", alignItems: "center"
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Ionicons name="person-circle-outline" size={40} color="#666" />
             <View
               style={{
-                // donorDetails - marginLeft: 15
-                marginLeft: 15,
+                paddingHorizontal: 12, // px-3
+                paddingVertical: 6, // py-1.5
+                borderRadius: 15, // rounded-full
+                backgroundColor: getStatusColor(listing.status),
               }}
             >
               <Text
                 style={{
-                  // donorName - fontSize: 16, fontWeight: "600", color: "#333"
-                  fontSize: 16,
-                  fontWeight: "600",
-                  color: "#333",
+                  color: "white", // text-white
+                  fontSize: 12, // text-xs
+                  fontWeight: "bold", // font-bold
                 }}
               >
-                {listing.donorName}
+                {listing.status.toUpperCase()}
               </Text>
-              <View
-                style={{
-                  // rating - flexDirection: "row", alignItems: "center", marginTop: 2
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 2,
-                }}
-              >
-                <Ionicons name="star" size={16} color="#FFD700" />
-                <Text
-                  style={{
-                    // ratingText - fontSize: 14, color: "#666", marginLeft: 4
-                    fontSize: 14,
-                    color: "#666",
-                    marginLeft: 4,
-                  }}
-                >
-                  {listing.donorRating.toFixed(1)}
-                </Text>
-              </View>
             </View>
           </View>
-        </View>
 
-        {isDonor && requests.length > 0 && (
+          <Text
+            style={{
+              fontSize: 16, // text-base
+              color: "#666", // text-gray-600
+              lineHeight: 24, // leading-6
+              marginBottom: 20, // mb-5
+            }}
+          >
+            {listing.description}
+          </Text>
+
           <View
             style={{
-              // requestsSection - backgroundColor: "white", padding: 20, marginTop: 15, borderRadius: 10
+              marginBottom: 20, // mb-5
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row", // flex-row
+                alignItems: "center", // items-center
+                marginBottom: 10, // mb-2.5
+              }}
+            >
+              <Ionicons name="people-outline" size={20} color="#666" />
+              <Text
+                style={{
+                  fontSize: 16, // text-base
+                  color: "#333", // text-gray-800
+                  marginLeft: 10, // ml-2.5
+                }}
+              >
+                Serves {listing.quantity} people
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row", // flex-row
+                alignItems: "center", // items-center
+                marginBottom: 10, // mb-2.5
+              }}
+            >
+              <Ionicons name="leaf-outline" size={20} color="#666" />
+              <Text
+                style={{
+                  fontSize: 16, // text-base
+                  color: "#333", // text-gray-800
+                  marginLeft: 10, // ml-2.5
+                }}
+              >
+                {listing.foodType}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row", // flex-row
+                alignItems: "center", // items-center
+                marginBottom: 10, // mb-2.5
+              }}
+            >
+              <Ionicons name="time-outline" size={20} color="#666" />
+              <Text
+                style={{
+                  fontSize: 16, // text-base
+                  color: "#FF6B35", // text-orange-500
+                  marginLeft: 10, // ml-2.5
+                }}
+              >
+                {formatTimeLeft(listing.expiryTime)}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row", // flex-row
+                alignItems: "center", // items-center
+                marginBottom: 10, // mb-2.5
+              }}
+            >
+              <Ionicons name="location-outline" size={20} color="#666" />
+              <Text
+                style={{
+                  fontSize: 16, // text-base
+                  color: "#333", // text-gray-800
+                  marginLeft: 10, // ml-2.5
+                }}
+              >
+                {listing.pickupLocation.address}
+              </Text>
+            </View>
+          </View>
+
+          <View
+            style={{
+              // donorSection - backgroundColor: "white", padding: 20, marginTop: 15, borderRadius: 10
               backgroundColor: "white",
               padding: 20,
               marginTop: 15,
@@ -610,113 +538,183 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
                 marginBottom: 15,
               }}
             >
-              Requests ({requests.length})
+              Donor Information
             </Text>
-            <FlatList
-              data={requests}
-              renderItem={renderRequest}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-            />
+            <View
+              style={{
+                // donorInfo - flexDirection: "row", alignItems: "center"
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Ionicons name="person-circle-outline" size={40} color="#666" />
+              <View
+                style={{
+                  // donorDetails - marginLeft: 15
+                  marginLeft: 15,
+                }}
+              >
+                <Text
+                  style={{
+                    // donorName - fontSize: 16, fontWeight: "600", color: "#333"
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: "#333",
+                  }}
+                >
+                  {listing.donorName}
+                </Text>
+                <View
+                  style={{
+                    // rating - flexDirection: "row", alignItems: "center", marginTop: 2
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginTop: 2,
+                  }}
+                >
+                  <Ionicons name="star" size={16} color="#FFD700" />
+                  <Text
+                    style={{
+                      // ratingText - fontSize: 14, color: "#666", marginLeft: 4
+                      fontSize: 14,
+                      color: "#666",
+                      marginLeft: 4,
+                    }}
+                  >
+                    {listing.donorRating.toFixed(1)}
+                  </Text>
+                </View>
+              </View>
+            </View>
           </View>
-        )}
 
-        <View
-          style={{
-            // actions - flexDirection: "row", gap: 10, marginTop: 20
-            flexDirection: "row",
-            gap: 10,
-            marginTop: 20,
-          }}
-        >
-          {canRequest && (
-            <TouchableOpacity
+          {isDonor && requests.length > 0 && (
+            <View
               style={{
-                // requestButton - flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#2E8B57", paddingVertical: 15, borderRadius: 10, gap: 8
-                flex: 1,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#2E8B57",
-                paddingVertical: 15,
+                // requestsSection - backgroundColor: "white", padding: 20, marginTop: 15, borderRadius: 10
+                backgroundColor: "white",
+                padding: 20,
+                marginTop: 15,
                 borderRadius: 10,
-                gap: 8,
               }}
-              onPress={handleRequestFood}
             >
-              <Ionicons name="restaurant-outline" size={20} color="white" />
               <Text
                 style={{
-                  // requestButtonText - color: "white", fontSize: 16, fontWeight: "600"
-                  color: "white",
-                  fontSize: 16,
-                  fontWeight: "600",
+                  // sectionTitle - fontSize: 18, fontWeight: "bold", color: "#333", marginBottom: 15
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  color: "#333",
+                  marginBottom: 15,
                 }}
               >
-                Request This Food
+                Requests ({requests.length})
               </Text>
-            </TouchableOpacity>
+              <FlatList
+                data={requests}
+                renderItem={renderRequest}
+                keyExtractor={(item) => item.id}
+                scrollEnabled={false}
+              />
+            </View>
           )}
 
-          {canChat && (
-            <TouchableOpacity
-              style={{
-                // chatButton - flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#007AFF", paddingVertical: 15, borderRadius: 10, gap: 8
-                flex: 1,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#007AFF",
-                paddingVertical: 15,
-                borderRadius: 10,
-                gap: 8,
-              }}
-              onPress={handleStartChat}
-            >
-              <Ionicons name="chatbubble-outline" size={20} color="white" />
-              <Text
+          <View
+            style={{
+              // actions - flexDirection: "row", gap: 10, marginTop: 20
+              flexDirection: "row",
+              gap: 10,
+              marginTop: 20,
+            }}
+          >
+            {canRequest && (
+              <TouchableOpacity
                 style={{
-                  // chatButtonText - color: "white", fontSize: 16, fontWeight: "600"
-                  color: "white",
-                  fontSize: 16,
-                  fontWeight: "600",
+                  // requestButton - flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#2E8B57", paddingVertical: 15, borderRadius: 10, gap: 8
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#2E8B57",
+                  paddingVertical: 15,
+                  borderRadius: 10,
+                  gap: 8,
                 }}
+                onPress={handleRequestFood}
               >
-                Start Chat
-              </Text>
-            </TouchableOpacity>
-          )}
+                <Ionicons name="restaurant-outline" size={20} color="white" />
+                <Text
+                  style={{
+                    // requestButtonText - color: "white", fontSize: 16, fontWeight: "600"
+                    color: "white",
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                >
+                  Request This Food
+                </Text>
+              </TouchableOpacity>
+            )}
 
-          {isDonor && (
-            <TouchableOpacity
-              style={{
-                // deleteButton - flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#DC2626", paddingVertical: 15, borderRadius: 10, gap: 8
-                flex: 1,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#DC2626",
-                paddingVertical: 15,
-                borderRadius: 10,
-                gap: 8,
-              }}
-              onPress={handleDeleteListing}
-            >
-              <Ionicons name="trash-outline" size={20} color="white" />
-              <Text
+            {canChat && (
+              <TouchableOpacity
                 style={{
-                  // deleteButtonText - color: "white", fontSize: 16, fontWeight: "600"
-                  color: "white",
-                  fontSize: 16,
-                  fontWeight: "600",
+                  // chatButton - flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#007AFF", paddingVertical: 15, borderRadius: 10, gap: 8
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#007AFF",
+                  paddingVertical: 15,
+                  borderRadius: 10,
+                  gap: 8,
                 }}
+                onPress={handleStartChat}
               >
-                Delete Listing
-              </Text>
-            </TouchableOpacity>
-          )}
+                <Ionicons name="chatbubble-outline" size={20} color="white" />
+                <Text
+                  style={{
+                    // chatButtonText - color: "white", fontSize: 16, fontWeight: "600"
+                    color: "white",
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                >
+                  Start Chat
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {isDonor && (
+              <TouchableOpacity
+                style={{
+                  // deleteButton - flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#DC2626", paddingVertical: 15, borderRadius: 10, gap: 8
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#DC2626",
+                  paddingVertical: 15,
+                  borderRadius: 10,
+                  gap: 8,
+                }}
+                onPress={handleDeleteListing}
+              >
+                <Ionicons name="trash-outline" size={20} color="white" />
+                <Text
+                  style={{
+                    // deleteButtonText - color: "white", fontSize: 16, fontWeight: "600"
+                    color: "white",
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                >
+                  Delete Listing
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

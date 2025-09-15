@@ -1,6 +1,7 @@
 // Screen to show incoming requests for donor's listings
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../contexts/AuthContext";
 import { FirestoreService } from "../services/api";
 import { FoodRequest, FoodListing } from "../types";
@@ -18,6 +19,7 @@ export default function IncomingRequestsScreen() {
     setLoading(true);
     try {
       // 1. Get all listings created by this user
+      if (!user) return;
       const listings = await FirestoreService.getUserListings(user.id);
       console.log("Listings for donor:", listings);
       const listingIds = listings.map((l: FoodListing) => l.id);
@@ -80,24 +82,25 @@ export default function IncomingRequestsScreen() {
       )}
     </View>
   );
-
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <Text style={{ fontSize: 20, fontWeight: "bold", margin: 16 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F0F8FF" }}>
+      <Text style={{ fontSize: 22, fontWeight: "bold", margin: 16 }}>
         Incoming Requests
       </Text>
-      {loading ? (
-        <Text style={{ margin: 16 }}>Loading...</Text>
-      ) : (
-        <FlatList
-          data={requests}
-          keyExtractor={(item) => item.id}
-          renderItem={renderRequest}
-          ListEmptyComponent={
-            <Text style={{ margin: 16 }}>No requests found.</Text>
-          }
-        />
-      )}
-    </View>
+      <FlatList
+        data={requests}
+        renderItem={renderRequest}
+        keyExtractor={(item) => item.id}
+        refreshing={loading}
+        onRefresh={fetchRequests}
+        ListEmptyComponent={
+          !loading ? (
+            <Text style={{ textAlign: "center", marginTop: 40 }}>
+              No incoming requests yet.
+            </Text>
+          ) : null
+        }
+      />
+    </SafeAreaView>
   );
 }

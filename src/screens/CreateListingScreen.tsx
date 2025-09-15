@@ -1,5 +1,6 @@
 // Screen for donors to create new food donation listings
 import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -273,94 +274,58 @@ export default function CreateListingScreen({ navigation }: Props) {
   };
 
   return (
-    <ScrollView
-      style={{
-        // container - flex: 1, backgroundColor: "#F0F8FF"
-        flex: 1,
-        backgroundColor: "#F0F8FF",
-      }}
-      contentContainerStyle={{
-        // content - padding: 20
-        padding: 20,
-      }}
-    >
-      <View
-        style={{
-          // header - marginBottom: 30, alignItems: "center"
-          marginBottom: 30,
-          alignItems: "center",
-        }}
-      >
-        <Text
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F0F8FF" }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
+        <View
           style={{
-            // title - fontSize: 28, fontWeight: "bold", color: "#2E8B57", marginBottom: 10
-            fontSize: 28,
-            fontWeight: "bold",
-            color: "#2E8B57",
-            marginBottom: 10,
+            // header - marginBottom: 30, alignItems: "center"
+            marginBottom: 30,
+            alignItems: "center",
           }}
         >
-          🍽️ Share Your Food
-        </Text>
-        <Text
-          style={{
-            // subtitle - fontSize: 16, color: "#666", textAlign: "center", lineHeight: 22
-            fontSize: 16,
-            color: "#666",
-            textAlign: "center",
-            lineHeight: 22,
-          }}
-        >
-          Help reduce food waste by sharing with those in need
-        </Text>
-      </View>
+          <Text
+            style={{
+              // title - fontSize: 28, fontWeight: "bold", color: "#2E8B57", marginBottom: 10
+              fontSize: 28,
+              fontWeight: "bold",
+              color: "#2E8B57",
+              marginBottom: 10,
+            }}
+          >
+            🍽️ Share Your Food
+          </Text>
+          <Text
+            style={{
+              // subtitle - fontSize: 16, color: "#666", textAlign: "center", lineHeight: 22
+              fontSize: 16,
+              color: "#666",
+              textAlign: "center",
+              lineHeight: 22,
+            }}
+          >
+            Help reduce food waste by sharing with those in need
+          </Text>
+        </View>
 
-      <View
-        style={{
-          // form - gap: 20
-          gap: 20,
-        }}
-      >
-        <Text
+        <View
           style={{
-            // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 8,
+            // form - gap: 20
+            gap: 20,
           }}
         >
-          Food Title *
-        </Text>
-        <TextInput
-          style={{
-            // input - borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, fontSize: 16, backgroundColor: "white"
-            borderWidth: 1,
-            borderColor: "#DDD",
-            borderRadius: 10,
-            padding: 15,
-            fontSize: 16,
-            backgroundColor: "white",
-          }}
-          placeholder="e.g., Fresh Homemade Biryani"
-          value={title}
-          onChangeText={setTitle}
-        />
-
-        <Text
-          style={{
-            // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 8,
-          }}
-        >
-          Description *
-        </Text>
-        <TextInput
-          style={[
-            {
+          <Text
+            style={{
+              // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#333",
+              marginBottom: 8,
+            }}
+          >
+            Food Title *
+          </Text>
+          <TextInput
+            style={{
               // input - borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, fontSize: 16, backgroundColor: "white"
               borderWidth: 1,
               borderColor: "#DDD",
@@ -368,477 +333,506 @@ export default function CreateListingScreen({ navigation }: Props) {
               padding: 15,
               fontSize: 16,
               backgroundColor: "white",
-            },
-            {
-              // textArea - height: 100, textAlignVertical: "top"
-              height: 100,
-              textAlignVertical: "top",
-            },
-          ]}
-          placeholder="Describe the food, ingredients, taste, etc."
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          numberOfLines={4}
-        />
-
-        <Text
-          style={{
-            // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 8,
-          }}
-        >
-          Food Type *
-        </Text>
-        <View
-          style={{
-            // pickerContainer - borderWidth: 1, borderColor: "#DDD", borderRadius: 10, backgroundColor: "white", overflow: "hidden"
-            borderWidth: 1,
-            borderColor: "#DDD",
-            borderRadius: 10,
-            backgroundColor: "white",
-            overflow: "hidden",
-          }}
-        >
-          <Picker
-            selectedValue={foodType}
-            onValueChange={(itemValue: "veg" | "non-veg" | "vegan") =>
-              setFoodType(itemValue)
-            }
-            style={{
-              // picker - height: 50
-              height: 50,
             }}
-          >
-            <Picker.Item label="🥬 Vegetarian" value="veg" />
-            <Picker.Item label="🍖 Non-Vegetarian" value="non-veg" />
-            <Picker.Item label="🌱 Vegan" value="vegan" />
-          </Picker>
-        </View>
+            placeholder="e.g., Fresh Homemade Biryani"
+            value={title}
+            onChangeText={setTitle}
+          />
 
-        <Text
-          style={{
-            // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 8,
-          }}
-        >
-          Quantity (approx. people served) *
-        </Text>
-        <TextInput
-          style={{
-            // input - borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, fontSize: 16, backgroundColor: "white"
-            borderWidth: 1,
-            borderColor: "#DDD",
-            borderRadius: 10,
-            padding: 15,
-            fontSize: 16,
-            backgroundColor: "white",
-          }}
-          placeholder="e.g., 10"
-          value={quantity}
-          onChangeText={setQuantity}
-          keyboardType="numeric"
-        />
-
-        <Text
-          style={{
-            // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 8,
-          }}
-        >
-          Expiry Time *
-        </Text>
-        <TouchableOpacity
-          style={{
-            // dateInput - flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, backgroundColor: "white"
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            borderWidth: 1,
-            borderColor: "#DDD",
-            borderRadius: 10,
-            padding: 15,
-            backgroundColor: "white",
-          }}
-          onPress={() => {
-            try {
-              setShowDatePicker(true);
-            } catch (error) {
-              console.error("Error opening date picker:", error);
-              Alert.alert(
-                "Error",
-                "Failed to open date picker. Please try again."
-              );
-            }
-          }}
-        >
           <Text
             style={{
-              // dateText - fontSize: 16, color: "#333"
+              // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
               fontSize: 16,
+              fontWeight: "600",
               color: "#333",
+              marginBottom: 8,
             }}
           >
-            {expiryTime.toLocaleDateString()} {expiryTime.toLocaleTimeString()}
+            Description *
           </Text>
-          <Ionicons name="calendar-outline" size={20} color="#666" />
-        </TouchableOpacity>
+          <TextInput
+            style={[
+              {
+                // input - borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, fontSize: 16, backgroundColor: "white"
+                borderWidth: 1,
+                borderColor: "#DDD",
+                borderRadius: 10,
+                padding: 15,
+                fontSize: 16,
+                backgroundColor: "white",
+              },
+              {
+                // textArea - height: 100, textAlignVertical: "top"
+                height: 100,
+                textAlignVertical: "top",
+              },
+            ]}
+            placeholder="Describe the food, ingredients, taste, etc."
+            value={description}
+            onChangeText={setDescription}
+            multiline
+            numberOfLines={4}
+          />
 
-        {/* Helper text for expiry time */}
-        <Text
-          style={{
-            fontSize: 12,
-            color: "#666",
-            marginTop: 5,
-            fontStyle: "italic",
-          }}
-        >
-          Select when this food should be picked up by (max 7 days from now)
-        </Text>
-
-        {showDatePicker && (
-          <View style={{ marginTop: 10 }}>
-            {Platform.OS === "ios" && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                }}
-              >
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#DC143C",
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
-                    borderRadius: 8,
-                  }}
-                  onPress={() => setShowDatePicker(false)}
-                >
-                  <Text style={{ color: "white", fontWeight: "600" }}>
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "#2E8B57",
-                    paddingHorizontal: 20,
-                    paddingVertical: 10,
-                    borderRadius: 8,
-                  }}
-                  onPress={() => setShowDatePicker(false)}
-                >
-                  <Text style={{ color: "white", fontWeight: "600" }}>
-                    Done
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            <View style={{ alignItems: "center", padding: 20 }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: "600",
-                  color: "#333",
-                  marginBottom: 15,
-                  textAlign: "center",
-                }}
-              >
-                Select Expiry Date & Time
-              </Text>
-
-              <View style={{ width: "100%", marginBottom: 15 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    color: "#666",
-                    marginBottom: 8,
-                  }}
-                >
-                  Date:
-                </Text>
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "#ddd",
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16,
-                    backgroundColor: "white",
-                  }}
-                  value={dateInput}
-                  onChangeText={setDateInput}
-                  placeholder="YYYY-MM-DD"
-                  keyboardType="numeric"
-                />
-              </View>
-
-              <View style={{ width: "100%", marginBottom: 20 }}>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontWeight: "500",
-                    color: "#666",
-                    marginBottom: 8,
-                  }}
-                >
-                  Time:
-                </Text>
-                <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "#ddd",
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16,
-                    backgroundColor: "white",
-                  }}
-                  value={timeInput}
-                  onChangeText={setTimeInput}
-                  placeholder="HH:MM"
-                  keyboardType="numeric"
-                />
-              </View>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => setShowDatePicker(false)}
-                  style={{
-                    flex: 1,
-                    backgroundColor: "#DC143C",
-                    paddingVertical: 12,
-                    paddingHorizontal: 20,
-                    borderRadius: 8,
-                    marginRight: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "white",
-                      fontWeight: "600",
-                      textAlign: "center",
-                    }}
-                  >
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={handleCustomDateTimeChange}
-                  style={{
-                    flex: 1,
-                    backgroundColor: "#2E8B57",
-                    paddingVertical: 12,
-                    paddingHorizontal: 20,
-                    borderRadius: 8,
-                    marginLeft: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "white",
-                      fontWeight: "600",
-                      textAlign: "center",
-                    }}
-                  >
-                    Set Time
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+          <Text
+            style={{
+              // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#333",
+              marginBottom: 8,
+            }}
+          >
+            Food Type *
+          </Text>
+          <View
+            style={{
+              // pickerContainer - borderWidth: 1, borderColor: "#DDD", borderRadius: 10, backgroundColor: "white", overflow: "hidden"
+              borderWidth: 1,
+              borderColor: "#DDD",
+              borderRadius: 10,
+              backgroundColor: "white",
+              overflow: "hidden",
+            }}
+          >
+            <Picker
+              selectedValue={foodType}
+              onValueChange={(itemValue: "veg" | "non-veg" | "vegan") =>
+                setFoodType(itemValue)
+              }
+              style={{
+                // picker - height: 50
+                height: 50,
+              }}
+            >
+              <Picker.Item label="🥬 Vegetarian" value="veg" />
+              <Picker.Item label="🍖 Non-Vegetarian" value="non-veg" />
+              <Picker.Item label="🌱 Vegan" value="vegan" />
+            </Picker>
           </View>
-        )}
 
-        <Text
-          style={{
-            // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 8,
-          }}
-        >
-          Pickup Location *
-        </Text>
-        <TouchableOpacity
-          style={[
-            {
-              // locationButton - flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, backgroundColor: "white"
+          <Text
+            style={{
+              // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#333",
+              marginBottom: 8,
+            }}
+          >
+            Quantity (approx. people served) *
+          </Text>
+          <TextInput
+            style={{
+              // input - borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, fontSize: 16, backgroundColor: "white"
+              borderWidth: 1,
+              borderColor: "#DDD",
+              borderRadius: 10,
+              padding: 15,
+              fontSize: 16,
+              backgroundColor: "white",
+            }}
+            placeholder="e.g., 10"
+            value={quantity}
+            onChangeText={setQuantity}
+            keyboardType="numeric"
+          />
+
+          <Text
+            style={{
+              // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#333",
+              marginBottom: 8,
+            }}
+          >
+            Expiry Time *
+          </Text>
+          <TouchableOpacity
+            style={{
+              // dateInput - flexDirection: "row", alignItems: "center", justifyContent: "space-between", borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, backgroundColor: "white"
               flexDirection: "row",
               alignItems: "center",
+              justifyContent: "space-between",
               borderWidth: 1,
               borderColor: "#DDD",
               borderRadius: 10,
               padding: 15,
               backgroundColor: "white",
-            },
-            location && {
-              // locationButtonSet - borderColor: "#2E8B57", backgroundColor: "#F0F8FF"
-              borderColor: "#2E8B57",
-              backgroundColor: "#F0F8FF",
-            },
-          ]}
-          onPress={getCurrentLocation}
-        >
-          <Ionicons
-            name={location ? "checkmark-circle" : "location-outline"}
-            size={20}
-            color={location ? "#2E8B57" : "#666"}
-          />
-          <Text
-            style={[
-              {
-                // locationText - flex: 1, marginLeft: 10, fontSize: 16, color: "#666"
-                flex: 1,
-                marginLeft: 10,
-                fontSize: 16,
-                color: "#666",
-              },
-              location && {
-                // locationTextSet - color: "#2E8B57", fontWeight: "600"
-                color: "#2E8B57",
-                fontWeight: "600",
-              },
-            ]}
-          >
-            {location ? address || "Location set" : "Set pickup location"}
-          </Text>
-        </TouchableOpacity>
-
-        <Text
-          style={{
-            // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
-            fontSize: 16,
-            fontWeight: "600",
-            color: "#333",
-            marginBottom: 8,
-          }}
-        >
-          Photos (optional, max 3)
-        </Text>
-        <View
-          style={{
-            // imageSection - gap: 15
-            gap: 15,
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              // addImageButton - flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#DDD", borderStyle: "dashed", borderRadius: 10, padding: 20, backgroundColor: "#F9F9F9"
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              borderWidth: 2,
-              borderColor: "#DDD",
-              borderStyle: "dashed",
-              borderRadius: 10,
-              padding: 20,
-              backgroundColor: "#F9F9F9",
             }}
-            onPress={pickImage}
+            onPress={() => {
+              try {
+                setShowDatePicker(true);
+              } catch (error) {
+                console.error("Error opening date picker:", error);
+                Alert.alert(
+                  "Error",
+                  "Failed to open date picker. Please try again."
+                );
+              }
+            }}
           >
-            <Ionicons name="camera-outline" size={30} color="#666" />
             <Text
               style={{
-                // addImageText - marginLeft: 10, fontSize: 16, color: "#666"
-                marginLeft: 10,
+                // dateText - fontSize: 16, color: "#333"
                 fontSize: 16,
-                color: "#666",
+                color: "#333",
               }}
             >
-              Add Photo
+              {expiryTime.toLocaleDateString()}{" "}
+              {expiryTime.toLocaleTimeString()}
+            </Text>
+            <Ionicons name="calendar-outline" size={20} color="#666" />
+          </TouchableOpacity>
+
+          {/* Helper text for expiry time */}
+          <Text
+            style={{
+              fontSize: 12,
+              color: "#666",
+              marginTop: 5,
+              fontStyle: "italic",
+            }}
+          >
+            Select when this food should be picked up by (max 7 days from now)
+          </Text>
+
+          {showDatePicker && (
+            <View style={{ marginTop: 10 }}>
+              {Platform.OS === "ios" && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 10,
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#DC143C",
+                      paddingHorizontal: 20,
+                      paddingVertical: 10,
+                      borderRadius: 8,
+                    }}
+                    onPress={() => setShowDatePicker(false)}
+                  >
+                    <Text style={{ color: "white", fontWeight: "600" }}>
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "#2E8B57",
+                      paddingHorizontal: 20,
+                      paddingVertical: 10,
+                      borderRadius: 8,
+                    }}
+                    onPress={() => setShowDatePicker(false)}
+                  >
+                    <Text style={{ color: "white", fontWeight: "600" }}>
+                      Done
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+              <View style={{ alignItems: "center", padding: 20 }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "600",
+                    color: "#333",
+                    marginBottom: 15,
+                    textAlign: "center",
+                  }}
+                >
+                  Select Expiry Date & Time
+                </Text>
+
+                <View style={{ width: "100%", marginBottom: 15 }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: "#666",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Date:
+                  </Text>
+                  <TextInput
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "#ddd",
+                      borderRadius: 8,
+                      padding: 12,
+                      fontSize: 16,
+                      backgroundColor: "white",
+                    }}
+                    value={dateInput}
+                    onChangeText={setDateInput}
+                    placeholder="YYYY-MM-DD"
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                <View style={{ width: "100%", marginBottom: 20 }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: "500",
+                      color: "#666",
+                      marginBottom: 8,
+                    }}
+                  >
+                    Time:
+                  </Text>
+                  <TextInput
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "#ddd",
+                      borderRadius: 8,
+                      padding: 12,
+                      fontSize: 16,
+                      backgroundColor: "white",
+                    }}
+                    value={timeInput}
+                    onChangeText={setTimeInput}
+                    placeholder="HH:MM"
+                    keyboardType="numeric"
+                  />
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => setShowDatePicker(false)}
+                    style={{
+                      flex: 1,
+                      backgroundColor: "#DC143C",
+                      paddingVertical: 12,
+                      paddingHorizontal: 20,
+                      borderRadius: 8,
+                      marginRight: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "600",
+                        textAlign: "center",
+                      }}
+                    >
+                      Cancel
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={handleCustomDateTimeChange}
+                    style={{
+                      flex: 1,
+                      backgroundColor: "#2E8B57",
+                      paddingVertical: 12,
+                      paddingHorizontal: 20,
+                      borderRadius: 8,
+                      marginLeft: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "600",
+                        textAlign: "center",
+                      }}
+                    >
+                      Set Time
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+
+          <Text
+            style={{
+              // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#333",
+              marginBottom: 8,
+            }}
+          >
+            Pickup Location *
+          </Text>
+          <TouchableOpacity
+            style={[
+              {
+                // locationButton - flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#DDD", borderRadius: 10, padding: 15, backgroundColor: "white"
+                flexDirection: "row",
+                alignItems: "center",
+                borderWidth: 1,
+                borderColor: "#DDD",
+                borderRadius: 10,
+                padding: 15,
+                backgroundColor: "white",
+              },
+              location && {
+                // locationButtonSet - borderColor: "#2E8B57", backgroundColor: "#F0F8FF"
+                borderColor: "#2E8B57",
+                backgroundColor: "#F0F8FF",
+              },
+            ]}
+            onPress={getCurrentLocation}
+          >
+            <Ionicons
+              name={location ? "checkmark-circle" : "location-outline"}
+              size={20}
+              color={location ? "#2E8B57" : "#666"}
+            />
+            <Text
+              style={[
+                {
+                  // locationText - flex: 1, marginLeft: 10, fontSize: 16, color: "#666"
+                  flex: 1,
+                  marginLeft: 10,
+                  fontSize: 16,
+                  color: "#666",
+                },
+                location && {
+                  // locationTextSet - color: "#2E8B57", fontWeight: "600"
+                  color: "#2E8B57",
+                  fontWeight: "600",
+                },
+              ]}
+            >
+              {location ? address || "Location set" : "Set pickup location"}
             </Text>
           </TouchableOpacity>
 
-          <View
-            style={{
-              // imagePreview - flexDirection: "row", flexWrap: "wrap", gap: 10
-              flexDirection: "row",
-              flexWrap: "wrap",
-              gap: 10,
-            }}
-          >
-            {images.map((uri, index) => (
-              <View
-                key={index}
-                style={{
-                  // imageContainer - position: "relative"
-                  position: "relative",
-                }}
-              >
-                <Image
-                  source={{ uri }}
-                  style={{
-                    // image - width: 100, height: 100, borderRadius: 10
-                    width: 100,
-                    height: 100,
-                    borderRadius: 10,
-                  }}
-                />
-                <TouchableOpacity
-                  style={{
-                    // removeImageButton - position: "absolute", top: -8, right: -8, backgroundColor: "white", borderRadius: 12
-                    position: "absolute",
-                    top: -8,
-                    right: -8,
-                    backgroundColor: "white",
-                    borderRadius: 12,
-                  }}
-                  onPress={() => removeImage(index)}
-                >
-                  <Ionicons name="close-circle" size={24} color="#FF4444" />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        <TouchableOpacity
-          style={[
-            {
-              // submitButton - backgroundColor: "#2E8B57", paddingVertical: 18, borderRadius: 12, alignItems: "center", marginTop: 30
-              backgroundColor: "#2E8B57",
-              paddingVertical: 18,
-              borderRadius: 12,
-              alignItems: "center",
-              marginTop: 30,
-            },
-            loading && {
-              // submitButtonDisabled - backgroundColor: "#A0A0A0"
-              backgroundColor: "#A0A0A0",
-            },
-          ]}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
           <Text
             style={{
-              // submitButtonText - color: "white", fontSize: 18, fontWeight: "bold"
-              color: "white",
-              fontSize: 18,
-              fontWeight: "bold",
+              // label - fontSize: 16, fontWeight: "600", color: "#333", marginBottom: 8
+              fontSize: 16,
+              fontWeight: "600",
+              color: "#333",
+              marginBottom: 8,
             }}
           >
-            {loading ? "Creating Listing..." : "Share Food"}
+            Photos (optional, max 3)
           </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          <View
+            style={{
+              // imageSection - gap: 15
+              gap: 15,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                // addImageButton - flexDirection: "row", alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: "#DDD", borderStyle: "dashed", borderRadius: 10, padding: 20, backgroundColor: "#F9F9F9"
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                borderWidth: 2,
+                borderColor: "#DDD",
+                borderStyle: "dashed",
+                borderRadius: 10,
+                padding: 20,
+                backgroundColor: "#F9F9F9",
+              }}
+              onPress={pickImage}
+            >
+              <Ionicons name="camera-outline" size={30} color="#666" />
+              <Text
+                style={{
+                  // addImageText - marginLeft: 10, fontSize: 16, color: "#666"
+                  marginLeft: 10,
+                  fontSize: 16,
+                  color: "#666",
+                }}
+              >
+                Add Photo
+              </Text>
+            </TouchableOpacity>
+
+            <View
+              style={{
+                // imagePreview - flexDirection: "row", flexWrap: "wrap", gap: 10
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 10,
+              }}
+            >
+              {images.map((uri, index) => (
+                <View
+                  key={index}
+                  style={{
+                    // imageContainer - position: "relative"
+                    position: "relative",
+                  }}
+                >
+                  <Image
+                    source={{ uri }}
+                    style={{
+                      // image - width: 100, height: 100, borderRadius: 10
+                      width: 100,
+                      height: 100,
+                      borderRadius: 10,
+                    }}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      // removeImageButton - position: "absolute", top: -8, right: -8, backgroundColor: "white", borderRadius: 12
+                      position: "absolute",
+                      top: -8,
+                      right: -8,
+                      backgroundColor: "white",
+                      borderRadius: 12,
+                    }}
+                    onPress={() => removeImage(index)}
+                  >
+                    <Ionicons name="close-circle" size={24} color="#FF4444" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={[
+              {
+                // submitButton - backgroundColor: "#2E8B57", paddingVertical: 18, borderRadius: 12, alignItems: "center", marginTop: 30
+                backgroundColor: "#2E8B57",
+                paddingVertical: 18,
+                borderRadius: 12,
+                alignItems: "center",
+                marginTop: 30,
+              },
+              loading && {
+                // submitButtonDisabled - backgroundColor: "#A0A0A0"
+                backgroundColor: "#A0A0A0",
+              },
+            ]}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            <Text
+              style={{
+                // submitButtonText - color: "white", fontSize: 18, fontWeight: "bold"
+                color: "white",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {loading ? "Creating Listing..." : "Share Food"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

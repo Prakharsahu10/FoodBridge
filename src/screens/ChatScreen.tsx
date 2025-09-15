@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { RouteProp } from "@react-navigation/native";
@@ -156,84 +157,83 @@ export default function ChatScreen({ route }: Props) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{
-        flex: 1,
-        backgroundColor: "#F0F8FF", // bg-blue-50
-      }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
-    >
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={{
-          flex: 1,
-          paddingHorizontal: 15, // px-4
-        }}
-        contentContainerStyle={{
-          paddingVertical: 20, // py-5
-        }}
-        showsVerticalScrollIndicator={false}
-        onContentSizeChange={() =>
-          flatListRef.current?.scrollToEnd({ animated: true })
-        }
-      />
-
-      <View
-        style={{
-          backgroundColor: "white", // bg-white
-          borderTopWidth: 1, // border-t
-          borderTopColor: "#E0E0E0", // border-gray-300
-          paddingHorizontal: 15, // px-4
-          paddingVertical: 10, // py-2.5
-          paddingBottom: Platform.OS === "ios" ? 30 : 10, // pb-7 or pb-2.5
-        }}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F0F8FF" }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id}
+          style={{
+            flex: 1,
+            paddingHorizontal: 15, // px-4
+          }}
+          contentContainerStyle={{
+            paddingVertical: 20, // py-5
+          }}
+          showsVerticalScrollIndicator={false}
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: true })
+          }
+        />
+
         <View
           style={{
-            flexDirection: "row", // flex-row
-            alignItems: "flex-end", // items-end
-            backgroundColor: "#F8F8F8", // bg-gray-100
-            borderRadius: 25, // rounded-full
+            backgroundColor: "white", // bg-white
+            borderTopWidth: 1, // border-t
+            borderTopColor: "#E0E0E0", // border-gray-300
             paddingHorizontal: 15, // px-4
-            paddingVertical: 8, // py-2
-            minHeight: 44, // min-h-11
+            paddingVertical: 10, // py-2.5
+            paddingBottom: Platform.OS === "ios" ? 30 : 10, // pb-7 or pb-2.5
           }}
         >
-          <TextInput
+          <View
             style={{
-              flex: 1,
-              fontSize: 16, // text-base
-              maxHeight: 100, // max-h-25
+              flexDirection: "row", // flex-row
+              alignItems: "flex-end", // items-end
+              backgroundColor: "#F8F8F8", // bg-gray-100
+              borderRadius: 25, // rounded-full
+              paddingHorizontal: 15, // px-4
               paddingVertical: 8, // py-2
-              color: "#333", // text-gray-800
+              minHeight: 44, // min-h-11
             }}
-            value={newMessage}
-            onChangeText={setNewMessage}
-            placeholder="Type a message..."
-            multiline
-            maxLength={500}
-          />
-          <TouchableOpacity
-            style={{
-              marginLeft: 10, // ml-2.5
-              padding: 8, // p-2
-              opacity: !newMessage.trim() || loading ? 0.5 : 1,
-            }}
-            onPress={sendMessage}
-            disabled={!newMessage.trim() || loading}
           >
-            <Ionicons
-              name="send"
-              size={20}
-              color={!newMessage.trim() || loading ? "#CCC" : "#2E8B57"}
+            <TextInput
+              style={{
+                flex: 1,
+                fontSize: 16, // text-base
+                maxHeight: 100, // max-h-25
+                paddingVertical: 8, // py-2
+                color: "#333", // text-gray-800
+              }}
+              value={newMessage}
+              onChangeText={setNewMessage}
+              placeholder="Type a message..."
+              multiline
+              maxLength={500}
             />
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                marginLeft: 10, // ml-2.5
+                padding: 8, // p-2
+                opacity: !newMessage.trim() || loading ? 0.5 : 1,
+              }}
+              onPress={sendMessage}
+              disabled={!newMessage.trim() || loading}
+            >
+              <Ionicons
+                name="send"
+                size={20}
+                color={!newMessage.trim() || loading ? "#CCC" : "#2E8B57"}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
