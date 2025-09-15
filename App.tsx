@@ -1,7 +1,7 @@
 // Main app entry point for FoodBridge
 import "react-native-gesture-handler"; // Required for gesture handling
 import React from "react";
-import { StatusBar } from "expo-status-bar";
+import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider } from "./src/contexts/AuthContext";
 import AppNavigator from "./src/navigation/AppNavigator";
@@ -15,7 +15,7 @@ export default function App() {
     <SafeAreaProvider>
       <AuthProvider>
         <AppNavigator />
-        <StatusBar style="auto" />
+        <StatusBar hidden={true} />
       </AuthProvider>
     </SafeAreaProvider>
   );

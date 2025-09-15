@@ -78,7 +78,17 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
         listingId: listing.id,
         requesterId: user.id,
         requesterName: user.name,
+        donorId: listing.donorId,
+        donorName: listing.donorName,
         status: "pending",
+      });
+
+      // Ensure listing reflects the request for donor views relying on requestedBy
+      const updatedRequestedBy = Array.isArray(listing.requestedBy)
+        ? [...listing.requestedBy, user.id]
+        : [user.id];
+      await FirestoreService.updateFoodListing(listing.id, {
+        requestedBy: updatedRequestedBy,
       });
       Alert.alert("Success", "Your request has been sent!");
       loadListingDetails(); // Refresh to show updated status

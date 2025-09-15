@@ -102,7 +102,26 @@ export class FirestoreService {
     const listingSnap = await getDoc(listingRef);
 
     if (listingSnap.exists()) {
-      return { id: listingSnap.id, ...listingSnap.data() } as FoodListing;
+      const data = listingSnap.data() as any;
+      const expiryTime =
+        data.expiryTime && data.expiryTime.toDate
+          ? data.expiryTime.toDate()
+          : data.expiryTime;
+      const createdAt =
+        data.createdAt && data.createdAt.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt;
+      const updatedAt =
+        data.updatedAt && data.updatedAt.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt;
+      return {
+        id: listingSnap.id,
+        ...data,
+        expiryTime,
+        createdAt,
+        updatedAt,
+      } as FoodListing;
     }
     return null;
   }
@@ -138,12 +157,7 @@ export class FirestoreService {
   ): Promise<FoodListing[]> {
     // Simple implementation - in production, use proper geospatial query
     const listingsRef = collection(db, "listings");
-    const q = query(
-      listingsRef,
-      where("status", "==", "available"),
-      orderBy("createdAt", "desc"),
-      limit(50)
-    );
+    const q = query(listingsRef, where("status", "==", "available"), limit(50));
 
     const querySnapshot = await getDocs(q);
     const listings: FoodListing[] = [];
@@ -181,6 +195,9 @@ export class FirestoreService {
       }
     });
 
+    // Sort client-side to avoid composite index requirement
+    listings.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+
     return listings;
   }
 
@@ -191,18 +208,36 @@ export class FirestoreService {
    */
   static async getUserListings(userId: string): Promise<FoodListing[]> {
     const listingsRef = collection(db, "listings");
-    const q = query(
-      listingsRef,
-      where("donorId", "==", userId),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(listingsRef, where("donorId", "==", userId));
 
     const querySnapshot = await getDocs(q);
     const listings: FoodListing[] = [];
 
-    querySnapshot.forEach((doc) => {
-      listings.push({ id: doc.id, ...doc.data() } as FoodListing);
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data() as any;
+      const createdAt =
+        data.createdAt && data.createdAt.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt;
+      const updatedAt =
+        data.updatedAt && data.updatedAt.toDate
+          ? data.updatedAt.toDate()
+          : data.updatedAt;
+      const expiryTime =
+        data.expiryTime && data.expiryTime.toDate
+          ? data.expiryTime.toDate()
+          : data.expiryTime;
+      listings.push({
+        id: docSnap.id,
+        ...data,
+        createdAt,
+        updatedAt,
+        expiryTime,
+      } as FoodListing);
     });
+
+    // Sort client-side to avoid composite index requirement
+    listings.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
 
     return listings;
   }
@@ -216,10 +251,18 @@ export class FirestoreService {
     requestData: Omit<FoodRequest, "id" | "createdAt">
   ): Promise<string> {
     const requestsRef = collection(db, "requests");
-    const docRef = await addDoc(requestsRef, {
+    const payload = {
       ...requestData,
       createdAt: Timestamp.now(),
-    });
+    };
+    // Debug log to ensure donorId is present
+    try {
+      console.log("[API] Creating request with payload:", payload);
+    } catch {}
+    const docRef = await addDoc(requestsRef, payload);
+    try {
+      console.log("[API] Created request id:", docRef.id);
+    } catch {}
     return docRef.id;
   }
 
@@ -237,26 +280,119 @@ export class FirestoreService {
   }
 
   /**
+   * Deletes a food request document.
+   * @param requestId - The request's document ID.
+   */
+  static async deleteFoodRequest(requestId: string): Promise<void> {
+    const requestRef = doc(db, "requests", requestId);
+    await deleteDoc(requestRef);
+  }
+
+  /**
    * Gets all requests for a specific listing.
    * @param listingId - The listing's document ID.
    * @returns Array of FoodRequest objects.
    */
   static async getListingRequests(listingId: string): Promise<FoodRequest[]> {
     const requestsRef = collection(db, "requests");
-    const q = query(
-      requestsRef,
-      where("listingId", "==", listingId),
-      orderBy("createdAt", "desc")
-    );
+    const q = query(requestsRef, where("listingId", "==", listingId));
 
     const querySnapshot = await getDocs(q);
     const requests: FoodRequest[] = [];
 
-    querySnapshot.forEach((doc) => {
-      requests.push({ id: doc.id, ...doc.data() } as FoodRequest);
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data() as any;
+      const createdAt =
+        data.createdAt && data.createdAt.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt;
+      requests.push({ id: docSnap.id, ...data, createdAt } as FoodRequest);
     });
 
+    // Sort client-side to avoid composite index requirement
+    requests.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+
     return requests;
+  }
+
+  /**
+   * Gets all requests for a set of listings using batched 'in' queries (10 IDs per batch).
+   * @param listingIds - Array of listing document IDs.
+   * @returns Array of FoodRequest objects sorted by createdAt desc.
+   */
+  static async getRequestsForListings(
+    listingIds: string[]
+  ): Promise<FoodRequest[]> {
+    if (!listingIds.length) return [];
+
+    const requestsRef = collection(db, "requests");
+    const batches: string[][] = [];
+    for (let i = 0; i < listingIds.length; i += 10) {
+      batches.push(listingIds.slice(i, i + 10));
+    }
+
+    const allRequests: FoodRequest[] = [];
+    for (const batchIds of batches) {
+      const q = query(requestsRef, where("listingId", "in", batchIds));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data() as any;
+        const createdAt =
+          data.createdAt && data.createdAt.toDate
+            ? data.createdAt.toDate()
+            : data.createdAt;
+        allRequests.push({ id: docSnap.id, ...data, createdAt } as FoodRequest);
+      });
+    }
+
+    allRequests.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+    return allRequests;
+  }
+
+  /**
+   * Gets all requests targeted to a donor by donorId.
+   * @param donorId - The donor user's ID.
+   */
+  static async getRequestsForDonor(donorId: string): Promise<FoodRequest[]> {
+    const requestsRef = collection(db, "requests");
+    const q = query(requestsRef, where("donorId", "==", donorId));
+    const querySnapshot = await getDocs(q);
+    const requests: FoodRequest[] = [];
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data() as any;
+      const createdAt =
+        data.createdAt && data.createdAt.toDate
+          ? data.createdAt.toDate()
+          : data.createdAt;
+      requests.push({ id: docSnap.id, ...data, createdAt } as FoodRequest);
+    });
+    requests.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+    return requests;
+  }
+
+  /**
+   * Subscribes to real-time updates of requests for a donor.
+   * @returns Unsubscribe function.
+   */
+  static subscribeToDonorRequests(
+    donorId: string,
+    callback: (requests: FoodRequest[]) => void
+  ): () => void {
+    const requestsRef = collection(db, "requests");
+    const q = query(requestsRef, where("donorId", "==", donorId));
+    return onSnapshot(q, (querySnapshot) => {
+      const items: FoodRequest[] = [];
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data() as any;
+        const createdAt =
+          data.createdAt && data.createdAt.toDate
+            ? data.createdAt.toDate()
+            : data.createdAt;
+        items.push({ id: docSnap.id, ...data, createdAt } as FoodRequest);
+      });
+      items.sort((a, b) => (b.createdAt as any) - (a.createdAt as any));
+      callback(items);
+    });
   }
 
   /**
@@ -287,16 +423,20 @@ export class FirestoreService {
     callback: (messages: ChatMessage[]) => void
   ): () => void {
     const messagesRef = collection(db, "messages");
-    const q = query(
-      messagesRef,
-      where("listingId", "==", listingId),
-      orderBy("timestamp", "asc")
-    );
+    const q = query(messagesRef, where("listingId", "==", listingId));
 
     return onSnapshot(q, (querySnapshot) => {
       const messages: ChatMessage[] = [];
       querySnapshot.forEach((doc) => {
         messages.push({ id: doc.id, ...doc.data() } as ChatMessage);
+      });
+      // Sort client-side by timestamp ascending
+      messages.sort((a, b) => {
+        const ta: any =
+          (a as any).timestamp?.toDate?.() ?? (a as any).timestamp;
+        const tb: any =
+          (b as any).timestamp?.toDate?.() ?? (b as any).timestamp;
+        return (ta as any) - (tb as any);
       });
       callback(messages);
     });

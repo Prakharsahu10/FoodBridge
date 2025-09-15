@@ -1,7 +1,7 @@
 // Firebase configuration and initialization for FoodBridge app
-import { initializeApp, getApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApp, FirebaseError } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore, initializeFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -22,18 +22,20 @@ try {
   app = initializeApp(firebaseConfig);
 } catch (error) {
   // If app already exists, get the existing instance
-  if (error.code === "app/duplicate-app") {
+  const e = error as FirebaseError;
+  if (e.code === "app/duplicate-app") {
     app = getApp();
   } else {
     throw error;
   }
 }
 
-// Initialize Firebase services with React Native persistence
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage), // Persist auth state
-});
-export const db = getFirestore(app); // Firestore database
+// Initialize Firebase services
+export const auth = getAuth(app);
+// Use long polling for React Native environments to avoid WebChannel issues
+export const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+}); // Firestore database
 export const storage = getStorage(app); // Cloud storage for images
 
 export default app;

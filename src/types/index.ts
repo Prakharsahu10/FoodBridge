@@ -45,6 +45,8 @@ export interface FoodRequest {
   listingId: string;
   requesterId: string;
   requesterName: string;
+  donorId: string;
+  donorName: string;
   message?: string;
   status: "pending" | "accepted" | "rejected" | "completed";
   createdAt: Date;

@@ -145,6 +145,8 @@ export default function MapScreen({ navigation }: Props) {
         listingId: listing.id,
         requesterId: user.id,
         requesterName: user.name,
+        donorId: listing.donorId,
+        donorName: listing.donorName,
         status: "pending",
       });
 

@@ -8,19 +8,23 @@ import { TimeUtils } from "../utils/helpers";
 interface FoodCardProps {
   listing: FoodListing;
   onPress: () => void;
+  onLongPress?: () => void;
   onRequestPress?: () => void;
   showRequestButton?: boolean;
   style?: ViewStyle;
   distance?: string;
+  actions?: React.ReactNode;
 }
 
 export function FoodCard({
   listing,
   onPress,
+  onLongPress,
   onRequestPress,
   showRequestButton = false,
   style,
   distance,
+  actions,
 }: FoodCardProps) {
   // Returns color based on food listing status
   const getStatusColor = (status: string) => {
@@ -69,6 +73,7 @@ export function FoodCard({
         style,
       ]}
       onPress={onPress}
+      onLongPress={onLongPress}
     >
       {/* Food image display */}
       {listing.images && listing.images.length > 0 && (
@@ -262,6 +267,8 @@ export function FoodCard({
             </TouchableOpacity>
           )}
         </View>
+        {/* Custom actions area (optional) */}
+        {actions && <View style={{ marginTop: 8 }}>{actions}</View>}
       </View>
     </TouchableOpacity>
   );
